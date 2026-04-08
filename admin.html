@@ -140,7 +140,7 @@
     </div>
     <div class="header-right">
       <span id="statsBar"></span>
-      <button class="btn-logout" onclick="window.location.href='/auth/logout'">Sign Out</button>
+      <button class="btn-logout" onclick="window.location.href='https://getfitwithadin.onrender.com/auth/logout'">Sign Out</button>
     </div>
   </div>
 </header>
@@ -178,9 +178,9 @@
   let allSubmissions = [];
 
   // Load submissions on page load (session cookie sent automatically)
-  fetch('/api/submissions')
+  fetch('https://getfitwithadin.onrender.com/api/submissions')
     .then(r => {
-      if (r.status === 401) { window.location.href = '/auth/login'; return; }
+      if (r.status === 401) { window.location.href = 'https://getfitwithadin.onrender.com/auth/login'; return; }
       return r.json();
     })
     .then(data => {

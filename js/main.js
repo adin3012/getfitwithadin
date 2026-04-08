@@ -142,7 +142,7 @@ function handleFormSubmit() {
   const waText = encodeURIComponent(lines);
 
   // Save to server (fire-and-forget — works even if server is offline)
-  fetch('/api/contact', {
+  fetch('https://getfitwithadin.onrender.com/api/contact', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email, weight, height, age, activity, interest, message })
