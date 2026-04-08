@@ -229,7 +229,7 @@ const server = http.createServer(async (req, res) => {
   const pathname = parsed.pathname;
 
   res.setHeader('Access-Control-Allow-Origin',  '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
@@ -341,6 +341,45 @@ const server = http.createServer(async (req, res) => {
     }
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(loadSubmissions()));
+    return;
+  }
+
+  // ---------- Protected: DELETE /api/submissions/:id ----------
+  const deleteMatch = pathname.match(/^\/api\/submissions\/(\d+)$/);
+  if (req.method === 'DELETE' && deleteMatch) {
+    if (!hasSession(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    const id = parseInt(deleteMatch[1]);
+    const list = loadSubmissions().filter(s => s.id !== id);
+    fs.writeFileSync(SUBMISSIONS, JSON.stringify(list, null, 2));
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true }));
+    return;
+  }
+
+  // ---------- Protected: PUT /api/submissions/:id ----------
+  const editMatch = pathname.match(/^\/api\/submissions\/(\d+)$/);
+  if (req.method === 'PUT' && editMatch) {
+    if (!hasSession(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    try {
+      const id   = parseInt(editMatch[1]);
+      const body = await readBody(req);
+      const updates = JSON.parse(body);
+      const list = loadSubmissions().map(s => s.id === id ? { ...s, ...updates } : s);
+      fs.writeFileSync(SUBMISSIONS, JSON.stringify(list, null, 2));
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true }));
+    } catch {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Bad request' }));
+    }
     return;
   }
 

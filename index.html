@@ -635,6 +635,21 @@
     </svg>
   </a>
 
+  <!-- Floating Apply Button -->
+  <a href="about.html#contact" class="floating-apply">Apply Now</a>
+  <style>
+    .floating-apply {
+      position: fixed; bottom: 28px; right: 28px; z-index: 99;
+      background: var(--accent); color: #000; font-weight: 800;
+      font-family: 'Inter', system-ui, sans-serif;
+      padding: 14px 24px; border-radius: 100px;
+      text-decoration: none; font-size: 0.9rem;
+      box-shadow: 0 4px 24px rgba(249,115,22,0.45);
+      transition: all 0.2s;
+    }
+    .floating-apply:hover { background: #fb923c; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(249,115,22,0.5); }
+  </style>
+
   <script src="js/main.js"></script>
 </body>
 </html>
