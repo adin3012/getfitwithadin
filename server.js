@@ -84,21 +84,19 @@ function httpsGet(options) {
   });
 }
 
-// ---------- Email transporter ----------
-let transporter = null;
+// ---------- Email (Resend) ----------
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+let resendClient = null;
 try {
-  const nodemailer = require('nodemailer');
-  if (EMAIL_USER && EMAIL_PASS) {
-    transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user: EMAIL_USER, pass: EMAIL_PASS }
-    });
+  if (RESEND_API_KEY) {
+    const { Resend } = require('resend');
+    resendClient = new Resend(RESEND_API_KEY);
     console.log('  Email notifications: ON →', NOTIFY_EMAIL);
   } else {
-    console.log('  Email notifications: OFF (set EMAIL_USER and EMAIL_PASS in .env)');
+    console.log('  Email notifications: OFF (set RESEND_API_KEY in .env)');
   }
 } catch {
-  console.log('  Email notifications: OFF (nodemailer not found)');
+  console.log('  Email notifications: OFF (resend not found)');
 }
 
 // ---------- Submissions helpers ----------
@@ -149,7 +147,7 @@ const PROGRAMME_LABELS = {
 };
 
 async function sendEmail(entry) {
-  if (!transporter) return;
+  if (!resendClient) return;
   const rows = [
     ['Name',     entry.name],
     ['Email',    `<a href="mailto:${entry.email}">${entry.email}</a>`],
@@ -185,11 +183,11 @@ async function sendEmail(entry) {
     </div>
   </div>`;
 
-  await transporter.sendMail({
-    from:    `"GetFitWithAdin" <${EMAIL_USER}>`,
-    to:      NOTIFY_EMAIL,
-    replyTo: entry.email,
-    subject: `New inquiry from ${entry.name}`,
+  await resendClient.emails.send({
+    from:     'GetFitWithAdin <onboarding@resend.dev>',
+    to:       NOTIFY_EMAIL,
+    reply_to: entry.email,
+    subject:  `New inquiry from ${entry.name}`,
     html
   });
 }
