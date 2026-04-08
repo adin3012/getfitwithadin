@@ -88,6 +88,28 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // ---------- Contact Form ----------
+// ---------- Apply Now Modal ----------
+function openApplyModal() {
+  const modal = document.getElementById('applyModal');
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeApplyModal() {
+  const modal = document.getElementById('applyModal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+    // Reset form
+    const form = document.getElementById('contactForm');
+    const success = document.getElementById('formSuccess');
+    if (form) { form.style.display = 'block'; form.reset && form.reset(); }
+    if (success) success.style.display = 'none';
+  }
+}
+
 function handleFormSubmit() {
   const name     = document.getElementById('name')?.value.trim();
   const email    = document.getElementById('email')?.value.trim();
@@ -190,6 +212,7 @@ function closeTransformModal() {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeTransformModal();
+    closeApplyModal();
   }
 });
 

@@ -273,7 +273,7 @@
             <li><span class="check">&#10003;</span> Progress tracking and check-ins</li>
             <li><span class="check">&#10003;</span> WhatsApp and call access</li>
           </ul>
-          <a href="about.html#contact" class="btn btn-outline" style="width:100%; justify-content:center;">Get Started</a>
+          <a onclick="openApplyModal()" class="btn btn-outline" style="width:100%; justify-content:center;">Get Started</a>
         </div>
 
         <div class="pricing-card">
@@ -289,7 +289,7 @@
             <li><span class="check">&#10003;</span> Frequent check-ins and tracking</li>
             <li><span class="check">&#10003;</span> WhatsApp and call access</li>
           </ul>
-          <a href="about.html#contact" class="btn btn-outline" style="width:100%; justify-content:center;">Get Started</a>
+          <a onclick="openApplyModal()" class="btn btn-outline" style="width:100%; justify-content:center;">Get Started</a>
         </div>
 
         <div class="pricing-card popular">
@@ -306,7 +306,7 @@
             <li><span class="check">&#10003;</span> Frequent check-ins and tracking</li>
             <li><span class="check">&#10003;</span> WhatsApp and call access</li>
           </ul>
-          <a href="about.html#contact" class="btn btn-primary" style="width:100%; justify-content:center;">Get Started</a>
+          <a onclick="openApplyModal()" class="btn btn-primary" style="width:100%; justify-content:center;">Get Started</a>
         </div>
 
         <div class="pricing-card">
@@ -322,7 +322,7 @@
             <li><span class="check">&#10003;</span> Frequent check-ins and tracking</li>
             <li><span class="check">&#10003;</span> WhatsApp and call access</li>
           </ul>
-          <a href="about.html#contact" class="btn btn-outline" style="width:100%; justify-content:center;">Get Started</a>
+          <a onclick="openApplyModal()" class="btn btn-outline" style="width:100%; justify-content:center;">Get Started</a>
         </div>
 
       </div>
@@ -403,7 +403,7 @@
       </div>
       <div class="transform-modal-cta">
         <p>Ready to write your own transformation story?</p>
-        <a href="about.html#contact" class="btn btn-primary" onclick="closeTransformModal()">Start Your Journey</a>
+        <button class="btn btn-primary" onclick="closeTransformModal(); openApplyModal();">Start Your Journey</button>
       </div>
     </div>
   </div>
@@ -518,7 +518,7 @@
       <p>I went from 117kg to a gold medal, multiple marathons, and a Devil's Circuit finish around a full-time job. If I can do it, you have no excuse not to start.</p>
       <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
         <a href="https://wa.me/918638740815?text=Hi%20Adin%2C%20I%20want%20to%20start%20coaching" class="btn btn-primary" target="_blank" rel="noopener">Message Me on WhatsApp</a>
-        <a href="about.html#contact" class="btn btn-outline">Send a Message</a>
+        <button onclick="openApplyModal()" class="btn btn-outline">Apply Now</button>
       </div>
     </div>
   </section>
@@ -561,19 +561,86 @@
   </a>
 
   <!-- Floating Apply Button -->
-  <a href="about.html#contact" class="floating-apply">Apply Now</a>
+  <button onclick="openApplyModal()" class="floating-apply">Apply Now</button>
   <style>
     .floating-apply {
       position: fixed; bottom: 28px; right: 28px; z-index: 99;
       background: var(--accent); color: #000; font-weight: 800;
       font-family: 'Inter', system-ui, sans-serif;
-      padding: 14px 24px; border-radius: 100px;
-      text-decoration: none; font-size: 0.9rem;
+      padding: 14px 24px; border-radius: 100px; border: none;
+      font-size: 0.9rem; cursor: pointer;
       box-shadow: 0 4px 24px rgba(249,115,22,0.45);
       transition: all 0.2s;
     }
     .floating-apply:hover { background: #fb923c; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(249,115,22,0.5); }
   </style>
+
+  <!-- Apply Now Modal -->
+  <div class="apply-modal" id="applyModal" onclick="if(event.target===this)closeApplyModal()">
+    <div class="apply-modal-content">
+      <button class="apply-modal-close" onclick="closeApplyModal()">✕</button>
+      <h2>Start Your Transformation</h2>
+      <p class="modal-sub">Fill in your details and I will get back to you within 24 hours.</p>
+      <div id="contactForm">
+        <div class="form-group">
+          <label for="name">Your Name</label>
+          <input type="text" id="name" placeholder="e.g. Rahul Sharma" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="rahul@company.com" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="weight">Current Weight (kg)</label>
+            <input type="number" id="weight" placeholder="e.g. 85" min="30" max="250" />
+          </div>
+          <div class="form-group">
+            <label for="height">Height (cm)</label>
+            <input type="number" id="height" placeholder="e.g. 175" min="100" max="250" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" placeholder="e.g. 28" min="16" max="70" />
+          </div>
+          <div class="form-group">
+            <label for="activity">Activity Level</label>
+            <select id="activity">
+              <option value="">Select level</option>
+              <option value="sedentary">Sedentary (desk job, no exercise)</option>
+              <option value="light">Lightly Active (1–2 days/week)</option>
+              <option value="moderate">Moderately Active (3–4 days/week)</option>
+              <option value="active">Very Active (5+ days/week)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="interest">Programme of Interest</label>
+          <select id="interest">
+            <option value="">Select a programme</option>
+            <option value="monthly">Monthly — ₹8,000</option>
+            <option value="quarterly">Quarterly — ₹21,000</option>
+            <option value="half-yearly">Half Yearly — ₹38,000</option>
+            <option value="annual">Annual — ₹71,000</option>
+            <option value="just-curious">Not sure yet, just exploring</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message">Your Goal</label>
+          <textarea id="message" placeholder="What is your primary goal? Weight loss, muscle gain, body recomposition?"></textarea>
+        </div>
+        <button type="button" class="btn btn-primary" id="submitBtn" style="width:100%; justify-content:center;" onclick="handleFormSubmit()">
+          Send My Details
+        </button>
+      </div>
+      <div id="formSuccess" style="display:none; text-align:center; padding:40px 0;">
+        <h3 style="margin-bottom:12px;">Message sent.</h3>
+        <p style="color:var(--muted); font-size:0.9rem;">I will get back to you within 24 hours.</p>
+      </div>
+    </div>
+  </div>
 
   <script src="js/main.js"></script>
 </body>
