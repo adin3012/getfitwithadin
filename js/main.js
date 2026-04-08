@@ -144,21 +144,21 @@ const PRICING = {
           <div class="form-row">
             <div class="form-group">
               <label for="weight">Current Weight (kg)</label>
-              <input type="number" id="weight" placeholder="e.g. 85" min="30" max="300" maxlength="5" />
+              <input type="number" id="weight" placeholder="e.g. 85" min="30" max="300" maxlength="5" required />
             </div>
             <div class="form-group">
               <label for="height">Height (cm)</label>
-              <input type="number" id="height" placeholder="e.g. 175" min="100" max="250" maxlength="5" />
+              <input type="number" id="height" placeholder="e.g. 175" min="100" max="250" maxlength="5" required />
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label for="age">Age</label>
-              <input type="number" id="age" placeholder="e.g. 28" min="16" max="80" maxlength="3" />
+              <input type="number" id="age" placeholder="e.g. 28" min="16" max="80" maxlength="3" required />
             </div>
             <div class="form-group">
               <label for="activity">Activity Level</label>
-              <select id="activity">
+              <select id="activity" required>
                 <option value="">Select level</option>
                 <option value="sedentary">Sedentary (desk job, no exercise)</option>
                 <option value="light">Lightly Active (1–2 days/week)</option>
@@ -169,7 +169,7 @@ const PRICING = {
           </div>
           <div class="form-group">
             <label for="interest">Programme of Interest</label>
-            <select id="interest">
+            <select id="interest" required>
               <option value="">Select a programme</option>
               <option value="monthly">Monthly — ₹8,000</option>
               <option value="quarterly">Quarterly — ₹21,000</option>
@@ -180,7 +180,7 @@ const PRICING = {
           </div>
           <div class="form-group">
             <label for="message">Your Goal</label>
-            <textarea id="message" placeholder="What is your primary goal? Weight loss, muscle gain, body recomposition?" maxlength="1000"></textarea>
+            <textarea id="message" placeholder="What is your primary goal? Weight loss, muscle gain, body recomposition?" maxlength="1000" required></textarea>
           </div>
           <button type="button" class="btn btn-primary" id="submitBtn" style="width:100%;justify-content:center;" onclick="handleFormSubmit()">
             Send My Details
@@ -265,8 +265,8 @@ function handleFormSubmit() {
   const interest = document.getElementById('interest')?.value || '';
   const message  = sanitize(document.getElementById('message')?.value, 1000);
 
-  if (!name || !email) {
-    alert('Please enter your name and email address.');
+  if (!name || !email || !weight || !height || !age || !activity || !interest || !message) {
+    alert('Please fill in all fields before submitting.');
     return;
   }
 
@@ -277,9 +277,12 @@ function handleFormSubmit() {
   }
 
   // Validate select values against allowed options
-  const validActivity = ['sedentary','light','moderate','active',''];
-  const validInterest = ['monthly','quarterly','half-yearly','annual','just-curious',''];
-  if (!validActivity.includes(activity) || !validInterest.includes(interest)) return;
+  const validActivity = ['sedentary','light','moderate','active'];
+  const validInterest = ['monthly','quarterly','half-yearly','annual','just-curious'];
+  if (!validActivity.includes(activity) || !validInterest.includes(interest)) {
+    alert('Please select your activity level and programme of interest.');
+    return;
+  }
 
   // Save to server
   fetch('https://getfitwithadin.onrender.com/api/contact', {
