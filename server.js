@@ -30,7 +30,7 @@ const NOTIFY_EMAIL         = process.env.NOTIFY_EMAIL         || EMAIL_USER;
 const GOOGLE_CLIENT_ID     = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const ALLOWED_EMAIL        = NOTIFY_EMAIL || EMAIL_USER;
-const REDIRECT_URI         = `http://localhost:${PORT}/auth/callback`;
+const REDIRECT_URI         = process.env.REDIRECT_URI || `http://localhost:${PORT}/auth/callback`;
 const SUBMISSIONS          = path.join(__dirname, 'submissions.json');
 
 // ---------- Sessions (in-memory) ----------
