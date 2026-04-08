@@ -995,6 +995,14 @@ img { display: block; max-width: 100%; height: auto; }
 .apply-modal-close:hover { border-color: var(--accent, #f97316); color: var(--accent, #f97316); }
 .apply-modal h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; }
 .apply-modal .modal-sub { font-size: 0.85rem; color: var(--muted, #888); margin-bottom: 28px; }
+.btn-wa-full {
+  width: 100%; background: #128c7e; color: #fff; border: none;
+  padding: 14px 24px; border-radius: 12px; font-size: 0.95rem;
+  font-weight: 700; font-family: var(--font); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background 0.2s;
+}
+.btn-wa-full:hover { background: #25D366; }
 @media (max-width: 600px) {
   .apply-modal-content { padding: 24px; border-radius: 16px; }
 }
