@@ -193,8 +193,8 @@
     <h3>Submission Details</h3>
     <div id="previewContent"></div>
     <div class="modal-actions">
-      <button class="action-btn btn-reply" id="previewReply">Reply via Email</button>
-      <button class="action-btn btn-wa" id="previewWa">WhatsApp</button>
+      <a class="action-btn btn-reply" id="previewReply" href="#">Reply via Email</a>
+      <a class="action-btn btn-wa" id="previewWa" href="#" target="_blank" rel="noopener">WhatsApp</a>
     </div>
   </div>
 </div>
@@ -332,7 +332,7 @@
           ${s.message ? `<div class="card-message"><div class="msg-label">Goal</div>${s.message}</div>` : ''}
           <div class="card-actions">
             <a class="action-btn btn-reply" href="mailto:${s.email}?subject=Re: Coaching Inquiry&body=Hi ${s.name},%0A%0AThanks for reaching out!">Reply via Email</a>
-            <a class="action-btn btn-wa" href="https://wa.me/91${s.phone || ''}?text=${encodeURIComponent(`Hi ${s.name}, thanks for your inquiry on GetFitWithAdin.com!`)}" target="_blank">WhatsApp</a>
+            <button class="action-btn btn-wa" onclick="navigator.clipboard.writeText('${s.email}').then(()=>this.textContent='✓ Copied!').catch(()=>{})">📋 Copy Email</button>
             <button class="action-btn btn-view" onclick="openPreview(${s.id})">👁 View</button>
             <button class="action-btn btn-edit" onclick="openEdit(${s.id})">✏️ Edit</button>
             <button class="action-btn btn-delete" onclick="deleteSubmission(${s.id})">🗑 Delete</button>
@@ -357,8 +357,13 @@
       ${s.message  ? `<div class="modal-field"><label>Goal</label><div class="view-value">${s.message}</div></div>` : ''}
       <div class="modal-field"><label>Submitted</label><div class="view-value">${formatDate(s.timestamp)}</div></div>
     `;
-    document.getElementById('previewReply').href = `mailto:${s.email}?subject=Re: Coaching Inquiry&body=Hi ${s.name},%0A%0AThanks for reaching out!`;
-    document.getElementById('previewWa').href = `https://wa.me/91${s.phone || ''}?text=${waMsg}`;
+    document.getElementById('previewReply').href = `mailto:${s.email}?subject=Re: Your Coaching Inquiry&body=Hi ${s.name},%0A%0AThanks for reaching out! I have received your details and will get back to you shortly.%0A%0ABest,%0AAdin`;
+    document.getElementById('previewWa').href = `https://wa.me/${s.email ? '' : ''}`;
+    document.getElementById('previewWa').onclick = function(e) {
+      e.preventDefault();
+      navigator.clipboard.writeText(s.email).then(() => { this.textContent = '✓ Email Copied!'; setTimeout(() => { this.textContent = 'Copy Email'; }, 2000); });
+    };
+    document.getElementById('previewWa').textContent = 'Copy Email';
     document.getElementById('previewModal').classList.add('active');
   }
 
@@ -397,6 +402,8 @@
       allSubmissions = allSubmissions.map(s => s.id === editingId ? { ...s, ...updates } : s);
       closeModal('editModal');
       renderSubmissions();
+    }).catch(() => {
+      alert('Failed to save changes. Please try again.');
     });
   }
 

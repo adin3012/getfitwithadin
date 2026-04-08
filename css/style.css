@@ -1275,45 +1275,6 @@ img { display: block; max-width: 100%; height: auto; }
   .pricing-grid-4    { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* ---------- Floating WhatsApp Button ---------- */
-.floating-whatsapp {
-  position: fixed;
-  bottom: 32px;
-  right: 32px;
-  width: 60px;
-  height: 60px;
-  background: #25D366;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-  z-index: 999;
-  transition: all 0.3s ease;
-  animation: pulseWhatsApp 2s infinite;
-}
-.floating-whatsapp:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 30px rgba(37, 211, 102, 0.5);
-  animation: none;
-}
-@keyframes pulseWhatsApp {
-  0%, 100% { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4); }
-  50% { box-shadow: 0 4px 30px rgba(37, 211, 102, 0.6); }
-}
-@media (max-width: 768px) {
-  .floating-whatsapp {
-    bottom: 20px;
-    right: 20px;
-    width: 54px;
-    height: 54px;
-  }
-  .floating-whatsapp svg {
-    width: 24px;
-    height: 24px;
-  }
-}
 
 /* Better touch targets */
 @media (max-width: 768px) {
@@ -1715,9 +1676,6 @@ img { display: block; max-width: 100%; height: auto; }
   .how-works-steps::before { display: none !important; }
   .step-card { padding: 16px !important; }
   .step-num { width: 36px !important; height: 36px !important; font-size: 0.9rem !important; }
-  
-  /* Floating WhatsApp */
-  .floating-whatsapp { width: 50px !important; height: 50px !important; bottom: 14px !important; right: 14px !important; }
   
   /* About Hero */
   .about-hero { padding: 90px 0 40px !important; }

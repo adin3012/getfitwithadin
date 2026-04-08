@@ -144,17 +144,17 @@ const PRICING = {
           <div class="form-row">
             <div class="form-group">
               <label for="weight">Current Weight (kg)</label>
-              <input type="number" id="weight" placeholder="e.g. 85" min="30" max="300" maxlength="5" required />
+              <input type="number" id="weight" placeholder="e.g. 85" min="30" max="300" required />
             </div>
             <div class="form-group">
               <label for="height">Height (cm)</label>
-              <input type="number" id="height" placeholder="e.g. 175" min="100" max="250" maxlength="5" required />
+              <input type="number" id="height" placeholder="e.g. 175" min="100" max="250" required />
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label for="age">Age</label>
-              <input type="number" id="age" placeholder="e.g. 28" min="16" max="80" maxlength="3" required />
+              <input type="number" id="age" placeholder="e.g. 28" min="16" max="80" required />
             </div>
             <div class="form-group">
               <label for="activity">Activity Level</label>
@@ -269,6 +269,10 @@ function handleFormSubmit() {
     alert('Please fill in all fields before submitting.');
     return;
   }
+
+  if (+weight < 30 || +weight > 300) { alert('Please enter a valid weight (30–300 kg).'); return; }
+  if (+height < 100 || +height > 250) { alert('Please enter a valid height (100–250 cm).'); return; }
+  if (+age < 16 || +age > 80) { alert('Please enter a valid age (16–80).'); return; }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
@@ -409,6 +413,8 @@ function toggleVideo() {
 }
 
 // ---------- Dynamic Pricing ----------
+document.addEventListener('DOMContentLoaded', () => { if (document.getElementById('countrySelect')) updatePricing(); });
+
 function updatePricing() {
   const select = document.getElementById('countrySelect');
   if (!select) return;
