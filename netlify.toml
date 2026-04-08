@@ -1,0 +1,15 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Route /api/contact to the Netlify Function
+[[redirects]]
+  from = "/api/contact"
+  to = "/.netlify/functions/contact"
+  status = 200
+
+# Protect admin page (redirect to 404 on live site — use locally for inbox)
+[[redirects]]
+  from = "/admin"
+  to = "/404.html"
+  status = 404
