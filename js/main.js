@@ -284,17 +284,25 @@ function handleFormSubmit() {
     return;
   }
 
-  // Save to server
+  const btn = document.getElementById('submitBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+
   fetch('https://getfitwithadin.onrender.com/api/contact', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email, weight, height, age, activity, interest, message })
-  }).catch(() => {});
-
-  const form = document.getElementById('contactForm');
-  const success = document.getElementById('formSuccess');
-  if (form) form.style.display = 'none';
-  if (success) success.style.display = 'block';
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Server error');
+    const form = document.getElementById('contactForm');
+    const success = document.getElementById('formSuccess');
+    if (form) form.style.display = 'none';
+    if (success) success.style.display = 'block';
+  })
+  .catch(() => {
+    if (btn) { btn.disabled = false; btn.textContent = 'Send My Details'; }
+    alert('Something went wrong. Please try again or contact me directly on WhatsApp.');
+  });
 }
 
 // Allow Enter key on submit button only (not on form inputs, to avoid accidental early submission)
