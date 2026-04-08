@@ -135,26 +135,26 @@ const PRICING = {
           </div>
           <div class="form-group">
             <label for="name">Your Name</label>
-            <input type="text" id="name" placeholder="e.g. Rahul Sharma" required />
+            <input type="text" id="name" placeholder="e.g. John Smith" required maxlength="80" autocomplete="name" />
           </div>
           <div class="form-group">
             <label for="email">Email Address</label>
-            <input type="email" id="email" placeholder="rahul@company.com" required />
+            <input type="email" id="email" placeholder="john@example.com" required maxlength="120" autocomplete="email" />
           </div>
           <div class="form-row">
             <div class="form-group">
               <label for="weight">Current Weight (kg)</label>
-              <input type="number" id="weight" placeholder="e.g. 85" min="30" max="250" />
+              <input type="number" id="weight" placeholder="e.g. 85" min="30" max="300" maxlength="5" />
             </div>
             <div class="form-group">
               <label for="height">Height (cm)</label>
-              <input type="number" id="height" placeholder="e.g. 175" min="100" max="250" />
+              <input type="number" id="height" placeholder="e.g. 175" min="100" max="250" maxlength="5" />
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label for="age">Age</label>
-              <input type="number" id="age" placeholder="e.g. 28" min="16" max="70" />
+              <input type="number" id="age" placeholder="e.g. 28" min="16" max="80" maxlength="3" />
             </div>
             <div class="form-group">
               <label for="activity">Activity Level</label>
@@ -180,7 +180,7 @@ const PRICING = {
           </div>
           <div class="form-group">
             <label for="message">Your Goal</label>
-            <textarea id="message" placeholder="What is your primary goal? Weight loss, muscle gain, body recomposition?"></textarea>
+            <textarea id="message" placeholder="What is your primary goal? Weight loss, muscle gain, body recomposition?" maxlength="1000"></textarea>
           </div>
           <button type="button" class="btn btn-primary" id="submitBtn" style="width:100%;justify-content:center;" onclick="handleFormSubmit()">
             Send My Details
@@ -250,15 +250,20 @@ function closeApplyModal() {
   document.body.style.overflow = '';
 }
 
+function sanitize(str, maxLen) {
+  if (!str) return '';
+  return str.replace(/[<>"'`]/g, '').slice(0, maxLen).trim();
+}
+
 function handleFormSubmit() {
-  const name     = document.getElementById('name')?.value.trim();
-  const email    = document.getElementById('email')?.value.trim();
-  const weight   = document.getElementById('weight')?.value.trim();
-  const height   = document.getElementById('height')?.value.trim();
-  const age      = document.getElementById('age')?.value.trim();
-  const activity = document.getElementById('activity')?.value;
-  const interest = document.getElementById('interest')?.value;
-  const message  = document.getElementById('message')?.value.trim();
+  const name     = sanitize(document.getElementById('name')?.value, 80);
+  const email    = sanitize(document.getElementById('email')?.value, 120);
+  const weight   = sanitize(document.getElementById('weight')?.value, 5);
+  const height   = sanitize(document.getElementById('height')?.value, 5);
+  const age      = sanitize(document.getElementById('age')?.value, 3);
+  const activity = document.getElementById('activity')?.value || '';
+  const interest = document.getElementById('interest')?.value || '';
+  const message  = sanitize(document.getElementById('message')?.value, 1000);
 
   if (!name || !email) {
     alert('Please enter your name and email address.');
@@ -270,6 +275,11 @@ function handleFormSubmit() {
     alert('Please enter a valid email address.');
     return;
   }
+
+  // Validate select values against allowed options
+  const validActivity = ['sedentary','light','moderate','active',''];
+  const validInterest = ['monthly','quarterly','half-yearly','annual','just-curious',''];
+  if (!validActivity.includes(activity) || !validInterest.includes(interest)) return;
 
   // Save to server
   fetch('https://getfitwithadin.onrender.com/api/contact', {

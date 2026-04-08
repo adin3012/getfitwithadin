@@ -107,19 +107,27 @@ function loadSubmissions() {
   catch { return []; }
 }
 
+const VALID_ACTIVITY = ['sedentary','light','moderate','active',''];
+const VALID_INTEREST = ['monthly','quarterly','half-yearly','annual','just-curious',''];
+
+function sanitize(str, maxLen) {
+  if (!str) return '';
+  return String(str).replace(/[<>"'`]/g, '').slice(0, maxLen).trim();
+}
+
 function saveSubmission(data) {
   const list = loadSubmissions();
   const entry = {
     id:        Date.now(),
     timestamp: new Date().toISOString(),
-    name:      data.name      || '',
-    email:     data.email     || '',
-    weight:    data.weight    || '',
-    height:    data.height    || '',
-    age:       data.age       || '',
-    activity:  data.activity  || '',
-    interest:  data.interest  || '',
-    message:   data.message   || ''
+    name:      sanitize(data.name,    80),
+    email:     sanitize(data.email,   120),
+    weight:    sanitize(data.weight,  5),
+    height:    sanitize(data.height,  5),
+    age:       sanitize(data.age,     3),
+    activity:  VALID_ACTIVITY.includes(data.activity) ? data.activity : '',
+    interest:  VALID_INTEREST.includes(data.interest) ? data.interest : '',
+    message:   sanitize(data.message, 1000)
   };
   list.unshift(entry);
   fs.writeFileSync(SUBMISSIONS, JSON.stringify(list, null, 2));
