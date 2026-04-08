@@ -109,39 +109,7 @@ function handleFormSubmit() {
     return;
   }
 
-  const programmeLabels = {
-    'monthly':      'Monthly (Rs. 8,000)',
-    'quarterly':    'Quarterly (Rs. 21,000)',
-    'half-yearly':  'Half Yearly (Rs. 38,000)',
-    'annual':       'Annual (Rs. 71,000)',
-    'just-curious': 'Not sure yet, just exploring',
-    '': 'Not specified'
-  };
-
-  const activityLabels = {
-    'sedentary': 'Sedentary',
-    'light':     'Lightly Active',
-    'moderate':  'Moderately Active',
-    'active':    'Very Active',
-    '': 'Not specified'
-  };
-
-  const lines = [
-    `Hi Adin, I want to start coaching.`,
-    ``,
-    `Name: ${name}`,
-    `Email: ${email}`,
-    weight   ? `Weight: ${weight} kg`                           : null,
-    height   ? `Height: ${height} cm`                           : null,
-    age      ? `Age: ${age}`                                    : null,
-    activity ? `Activity Level: ${activityLabels[activity]}`   : null,
-    interest ? `Programme: ${programmeLabels[interest]}`       : null,
-    message  ? `\nGoal: ${message}`                            : null,
-  ].filter(Boolean).join('\n');
-
-  const waText = encodeURIComponent(lines);
-
-  // Save to server (fire-and-forget — works even if server is offline)
+  // Save to server
   fetch('https://getfitwithadin.onrender.com/api/contact', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -152,10 +120,6 @@ function handleFormSubmit() {
   const success = document.getElementById('formSuccess');
   if (form) form.style.display = 'none';
   if (success) success.style.display = 'block';
-
-  setTimeout(() => {
-    window.open(`https://wa.me/918638740815?text=${waText}`, '_blank', 'noopener');
-  }, 800);
 }
 
 // Allow Enter key on submit button only (not on form inputs, to avoid accidental early submission)
