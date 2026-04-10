@@ -9,21 +9,46 @@ const ACTIVITY_LABELS = {
   active:    'Very Active (5+ days/week)'
 };
 const PROGRAMME_LABELS = {
-  monthly:       'Monthly — ₹8,000',
-  quarterly:     'Quarterly — ₹21,000',
-  'half-yearly': 'Half Yearly — ₹38,000',
-  annual:        'Annual — ₹71,000',
+  monthly:       'Monthly — ₹6,000',
+  quarterly:     'Quarterly — ₹15,000',
+  'half-yearly': 'Half Yearly — ₹27,000',
+  annual:        'Annual — ₹51,000',
   'just-curious':'Not sure yet, just exploring'
 };
+
+const VALID_ACTIVITY = ['sedentary','light','moderate','active',''];
+const VALID_INTEREST = ['monthly','quarterly','half-yearly','annual','just-curious',''];
+
+function sanitize(str, maxLen) {
+  if (!str) return '';
+  return String(str).replace(/[<>&"'`]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c])).slice(0, maxLen).trim();
+}
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  let data;
-  try { data = JSON.parse(event.body); }
+  // Body size check
+  if ((event.body || '').length > 10240) {
+    return { statusCode: 413, body: JSON.stringify({ error: 'Payload too large' }) };
+  }
+
+  let raw;
+  try { raw = JSON.parse(event.body); }
   catch { return { statusCode: 400, body: JSON.stringify({ error: 'Bad request' }) }; }
+
+  // Sanitize all inputs
+  const data = {
+    name:     sanitize(raw.name,    80),
+    email:    sanitize(raw.email,   120),
+    weight:   sanitize(raw.weight,  5),
+    height:   sanitize(raw.height,  5),
+    age:      sanitize(raw.age,     3),
+    activity: VALID_ACTIVITY.includes(raw.activity) ? raw.activity : '',
+    interest: VALID_INTEREST.includes(raw.interest) ? raw.interest : '',
+    message:  sanitize(raw.message, 1000),
+  };
 
   // Send email notification
   try {

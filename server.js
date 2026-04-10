@@ -33,6 +33,31 @@ const ALLOWED_EMAIL        = NOTIFY_EMAIL || EMAIL_USER;
 const REDIRECT_URI         = process.env.REDIRECT_URI || `http://localhost:${PORT}/auth/callback`;
 const SUBMISSIONS          = path.join(__dirname, 'submissions.json');
 
+// ---------- Rate limiting (in-memory) ----------
+const rateLimits = new Map(); // ip -> { count, resetAt }
+const RATE_LIMIT  = 5;              // max requests
+const RATE_WINDOW = 60 * 1000;     // per 1 minute
+
+function checkRateLimit(ip) {
+  const now   = Date.now();
+  const entry = rateLimits.get(ip);
+  if (!entry || entry.resetAt < now) {
+    rateLimits.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT) return false;
+  entry.count++;
+  return true;
+}
+
+// Cleanup stale rate limit entries every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of rateLimits) {
+    if (entry.resetAt < now) rateLimits.delete(ip);
+  }
+}, 5 * 60 * 1000);
+
 // ---------- Sessions (in-memory) ----------
 const sessions = new Map(); // token -> expiry timestamp
 
@@ -139,10 +164,10 @@ const ACTIVITY_LABELS = {
   active:    'Very Active (5+ days/week)'
 };
 const PROGRAMME_LABELS = {
-  monthly:       'Monthly — ₹8,000',
-  quarterly:     'Quarterly — ₹21,000',
-  'half-yearly': 'Half Yearly — ₹38,000',
-  annual:        'Annual — ₹71,000',
+  monthly:       'Monthly — ₹6,000',
+  quarterly:     'Quarterly — ₹15,000',
+  'half-yearly': 'Half Yearly — ₹27,000',
+  annual:        'Annual — ₹51,000',
   'just-curious':'Not sure yet, just exploring'
 };
 
@@ -220,10 +245,15 @@ function serveFile(res, filePath) {
   }
 }
 
-function readBody(req) {
+function readBody(req, maxBytes = 10240) { // 10 KB max
   return new Promise((resolve, reject) => {
     let body = '';
-    req.on('data', chunk => body += chunk);
+    let size = 0;
+    req.on('data', chunk => {
+      size += chunk.length;
+      if (size > maxBytes) { req.destroy(); reject(new Error('Body too large')); return; }
+      body += chunk;
+    });
     req.on('end',  ()    => resolve(body));
     req.on('error', reject);
   });
@@ -234,11 +264,24 @@ const server = http.createServer(async (req, res) => {
   const parsed   = url.parse(req.url, true);
   const pathname = parsed.pathname;
 
-  res.setHeader('Access-Control-Allow-Origin',  '*');
+  const ALLOWED_ORIGINS = ['https://getfitwithadin.com', 'https://www.getfitwithadin.com', `http://localhost:${PORT}`];
+  const origin = req.headers.origin;
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
 
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
+
+  // Block direct access to sensitive files
+  if (parsed.pathname.endsWith('.json') && !parsed.pathname.startsWith('/api/')) {
+    res.writeHead(403, { 'Content-Type': 'text/plain' });
+    res.end('Forbidden');
+    return;
+  }
 
   // ---------- Google OAuth: start ----------
   if (req.method === 'GET' && pathname === '/auth/login') {
@@ -289,7 +332,7 @@ const server = http.createServer(async (req, res) => {
       const token = createSession();
       res.writeHead(302, {
         Location:    '/admin',
-        'Set-Cookie': `gfwa_session=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 3600}`
+        'Set-Cookie': `gfwa_session=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${7 * 24 * 3600}`
       });
       res.end();
     } catch (err) {
@@ -324,6 +367,12 @@ const server = http.createServer(async (req, res) => {
 
   // ---------- POST /api/contact ----------
   if (req.method === 'POST' && pathname === '/api/contact') {
+    const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress;
+    if (!checkRateLimit(ip)) {
+      res.writeHead(429, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Too many requests. Please wait a minute.' }));
+      return;
+    }
     try {
       const body  = await readBody(req);
       const data  = JSON.parse(body);
@@ -391,9 +440,15 @@ const server = http.createServer(async (req, res) => {
 
   // ---------- Static files ----------
   let filePath = pathname === '/' ? 'index.html' : pathname.replace(/^\//, '');
-  const fullPath = path.join(__dirname, filePath);
+  const fullPath = path.resolve(__dirname, filePath);
+  // Path traversal protection — ensure file is within project directory
+  if (!fullPath.startsWith(path.resolve(__dirname) + path.sep) && fullPath !== path.resolve(__dirname)) {
+    res.writeHead(403, { 'Content-Type': 'text/plain' });
+    res.end('Forbidden');
+    return;
+  }
   if (!path.extname(filePath) && !fs.existsSync(fullPath)) filePath += '.html';
-  serveFile(res, path.join(__dirname, filePath));
+  serveFile(res, path.resolve(__dirname, filePath));
 });
 
 server.listen(PORT, () => {
