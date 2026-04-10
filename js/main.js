@@ -105,14 +105,14 @@ const PRICING = {
 //    OR use this shortcut: open the form URL + "?usp=pp_url&entry.FIELD_ID=test" to find each ID
 // 5. Paste the IDs below and set LEADS_ENABLED = true
 
-const LEADS_ENABLED = false; // set to true after filling in IDs below
-const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/YOUR_FORM_ID_HERE/formResponse';
+const LEADS_ENABLED = true;
+const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSeJ7AgQlp80vZ3bHDcOA604Iz0aTFwJcg8BYirZLkYY9EdK_A/formResponse';
 const LEAD_FIELDS = {
-  name:      'entry.XXXXXXXXX', // replace with your entry ID for Name
-  email:     'entry.XXXXXXXXX', // replace with your entry ID for Email
-  whatsapp:  'entry.XXXXXXXXX', // replace with your entry ID for WhatsApp
-  interest:  'entry.XXXXXXXXX', // replace with your entry ID for Interest
-  source:    'entry.XXXXXXXXX', // replace with your entry ID for Source
+  name:      'entry.2107149741',
+  email:     'entry.526745828',
+  whatsapp:  'entry.655107678',
+  interest:  'entry.884049450',
+  source:    'entry.653971467',
 };
 
 function submitLeadToSheets(data) {
