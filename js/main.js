@@ -90,11 +90,59 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // ---------- Contact Form ----------
 // ---------- Apply Now Modal ----------
 const PRICING = {
-  IN: { symbol: '₹', monthly: '8,000',  quarterly: '21,000', halfYearly: '38,000', annual: '71,000', flag: '🇮🇳 India' },
-  US: { symbol: '$', monthly: '150',    quarterly: '375',    halfYearly: '600',    annual: '1,200',  flag: '🇺🇸 USA' },
-  AU: { symbol: 'A$',monthly: '165',    quarterly: '435',    halfYearly: '790',    annual: '1,470',  flag: '🇦🇺 Australia' },
-  AE: { symbol: 'AED',monthly: '600',   quarterly: '1,500',  halfYearly: '2,400',  annual: '4,800',  flag: '🇦🇪 UAE' },
+  IN: { symbol: '₹', monthly: '6,000',  quarterly: '15,000', halfYearly: '27,000', annual: '51,000', flag: '🇮🇳 India' },
+  US: { symbol: '$', monthly: '110',    quarterly: '280',    halfYearly: '505',    annual: '955',    flag: '🇺🇸 USA' },
+  AU: { symbol: 'A$',monthly: '125',    quarterly: '310',    halfYearly: '555',    annual: '1,050',  flag: '🇦🇺 Australia' },
+  AE: { symbol: 'AED',monthly: '450',   quarterly: '1,125',  halfYearly: '2,025',  annual: '3,825',  flag: '🇦🇪 UAE' },
 };
+
+// ---------- Google Sheets Lead Capture ----------
+// HOW TO SET UP:
+// 1. Go to forms.google.com and create a new form
+// 2. Add 5 Short Answer questions: Name, Email, WhatsApp, Interest, Source
+// 3. Copy the form URL — the FORM_ID is the long string between /d/e/ and /viewform
+// 4. To get entry IDs: open the form, right-click > Inspect, fill a field and look for "entry.XXXXXXX" in the network tab
+//    OR use this shortcut: open the form URL + "?usp=pp_url&entry.FIELD_ID=test" to find each ID
+// 5. Paste the IDs below and set LEADS_ENABLED = true
+
+const LEADS_ENABLED = false; // set to true after filling in IDs below
+const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/YOUR_FORM_ID_HERE/formResponse';
+const LEAD_FIELDS = {
+  name:      'entry.XXXXXXXXX', // replace with your entry ID for Name
+  email:     'entry.XXXXXXXXX', // replace with your entry ID for Email
+  whatsapp:  'entry.XXXXXXXXX', // replace with your entry ID for WhatsApp
+  interest:  'entry.XXXXXXXXX', // replace with your entry ID for Interest
+  source:    'entry.XXXXXXXXX', // replace with your entry ID for Source
+};
+
+function submitLeadToSheets(data) {
+  if (!LEADS_ENABLED) return;
+  const body = new URLSearchParams();
+  if (data.name)     body.append(LEAD_FIELDS.name,     data.name);
+  if (data.email)    body.append(LEAD_FIELDS.email,    data.email);
+  if (data.whatsapp) body.append(LEAD_FIELDS.whatsapp, data.whatsapp);
+  if (data.interest) body.append(LEAD_FIELDS.interest, data.interest);
+  if (data.source)   body.append(LEAD_FIELDS.source,   data.source);
+  fetch(GOOGLE_FORM_ACTION, { method: 'POST', mode: 'no-cors', body });
+}
+
+function handleLeadCapture() {
+  const name     = (document.getElementById('leadName')?.value || '').trim();
+  const email    = (document.getElementById('leadEmail')?.value || '').trim();
+  const whatsapp = (document.getElementById('leadWhatsApp')?.value || '').trim();
+
+  if (!name || !email) { alert('Please enter your name and email.'); return; }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) { alert('Please enter a valid email address.'); return; }
+
+  const btn = document.getElementById('leadSubmitBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+
+  submitLeadToSheets({ name, email, whatsapp, source: 'homepage-lead-bar' });
+
+  document.getElementById('leadFormWrap').style.display = 'none';
+  document.getElementById('leadSuccess').style.display  = 'block';
+}
 
 // Inject modal into page once
 (function injectApplyModal() {
@@ -171,10 +219,10 @@ const PRICING = {
             <label for="interest">Programme of Interest</label>
             <select id="interest" required>
               <option value="">Select a programme</option>
-              <option value="monthly">Monthly — ₹8,000</option>
-              <option value="quarterly">Quarterly — ₹21,000</option>
-              <option value="half-yearly">Half Yearly — ₹38,000</option>
-              <option value="annual">Annual — ₹71,000</option>
+              <option value="monthly">Monthly — ₹6,000</option>
+              <option value="quarterly">Quarterly — ₹15,000</option>
+              <option value="half-yearly">Half Yearly — ₹27,000</option>
+              <option value="annual">Annual — ₹51,000</option>
               <option value="just-curious">Not sure yet, just exploring</option>
             </select>
           </div>
@@ -290,6 +338,9 @@ function handleFormSubmit() {
 
   const btn = document.getElementById('submitBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+
+  // Log lead to Google Sheets in parallel (fire and forget)
+  submitLeadToSheets({ name, email, interest, source: 'apply-modal' });
 
   fetch('https://getfitwithadin.onrender.com/api/contact', {
     method: 'POST',
