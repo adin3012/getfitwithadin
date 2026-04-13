@@ -6,6 +6,14 @@
 const hamburger   = document.getElementById('hamburger');
 const mobileMenu  = document.getElementById('mobileMenu');
 
+function closeMobileMenu() {
+  mobileMenu.classList.remove('open');
+  hamburger.classList.remove('open');
+  hamburger.setAttribute('aria-expanded', false);
+  hamburger.setAttribute('aria-label', 'Open menu');
+  document.body.style.overflow = '';
+}
+
 if (hamburger && mobileMenu) {
   hamburger.addEventListener('click', () => {
     mobileMenu.classList.toggle('open');
@@ -13,24 +21,18 @@ if (hamburger && mobileMenu) {
     const isOpen = mobileMenu.classList.contains('open');
     hamburger.setAttribute('aria-expanded', isOpen);
     hamburger.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+    document.body.style.overflow = isOpen ? 'hidden' : '';
   });
 
   // Close on link click
   mobileMenu.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      hamburger.classList.remove('open');
-      hamburger.setAttribute('aria-expanded', false);
-      hamburger.setAttribute('aria-label', 'Open menu');
-    });
+    link.addEventListener('click', closeMobileMenu);
   });
 
   // Close on outside click
   document.addEventListener('click', (e) => {
     if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
-      mobileMenu.classList.remove('open');
-      hamburger.classList.remove('open');
-      hamburger.setAttribute('aria-expanded', false);
+      closeMobileMenu();
     }
   });
 }
@@ -428,6 +430,22 @@ if (submitBtn) {
   });
 }
 
+// ---------- Testimonial touch-pause ----------
+const testimonialsScroll = document.querySelector('.testimonials-scroll');
+if (testimonialsScroll) {
+  let isTouching = false;
+  testimonialsScroll.addEventListener('touchstart', () => {
+    isTouching = true;
+    testimonialsScroll.style.animationPlayState = 'paused';
+  }, { passive: true });
+  testimonialsScroll.addEventListener('touchend', () => {
+    isTouching = false;
+    setTimeout(() => {
+      if (!isTouching) testimonialsScroll.style.animationPlayState = 'running';
+    }, 1000);
+  }, { passive: true });
+}
+
 // ---------- Navbar scroll style ----------
 window.addEventListener('scroll', () => {
   const nav = document.querySelector('nav');
@@ -487,6 +505,7 @@ function closeTransformModal() {
 // Close on Escape key
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
+    closeMobileMenu();
     closeTransformModal();
     closeApplyModal();
   }
