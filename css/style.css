@@ -196,52 +196,6 @@ nav {
   display: flex; gap: 16px; align-items: flex-start;
 }
 
-/* ---------- Proof Strip ---------- */
-.proof-strip {
-  background: var(--bg2);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 32px 0;
-}
-.proof-inner {
-  display: flex;
-  justify-content: center;
-  gap: 80px;
-  flex-wrap: wrap;
-}
-.proof-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.proof-icon {
-  width: 48px; height: 48px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--accent);
-  flex-shrink: 0;
-}
-.proof-num {
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: var(--accent);
-  line-height: 1;
-}
-.proof-label {
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-top: 3px;
-  font-weight: 500;
-}
-@media (max-width: 600px) {
-  .proof-inner { gap: 20px; justify-content: space-around; }
-  .proof-item { flex-direction: column; text-align: center; gap: 8px; flex: 1; min-width: 80px; }
-  .proof-icon { width: 40px; height: 40px; }
-  .proof-num { font-size: 1.3rem; }
-  .proof-label { font-size: 0.7rem; }
-}
 
 /* ---------- Pain Section ---------- */
 .pain-section { background: var(--bg2); }
