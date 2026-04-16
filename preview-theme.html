@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theme Preview — Refined Orange</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #080808;
+      --bg2:       #0f0f0f;
+      --bg3:       #161616;
+      --border:    #1c1c1c;
+      --accent:    #f97316;
+      --accent2:   #fb923c;
+      --text:      #f0f0f0;
+      --muted:     #666666;
+      --white:     #ffffff;
+      --font:      'Inter', system-ui, sans-serif;
+      --radius:    12px;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 40px 24px;
+    }
+
+    h1 { font-size: 2.8rem; font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; }
+    h2 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.02em; }
+    h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
+    p  { color: #909090; font-size: 1rem; }
+
+    .container { max-width: 920px; margin: 0 auto; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+
+    .section-label {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted);
+      display: block; margin-bottom: 14px;
+    }
+
+    /* Page header */
+    .page-title { text-align: center; margin-bottom: 56px; }
+    .page-title h2 { font-size: 0.9rem; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
+    .page-title p  { font-size: 0.8rem; color: #333; }
+    .tag {
+      display: inline-block; margin-top: 14px;
+      background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2);
+      color: var(--accent); font-size: 0.75rem; font-weight: 700;
+      padding: 4px 14px; border-radius: 100px; letter-spacing: 0.06em;
+    }
+
+    /* ---- NAVBAR ---- */
+    .nav-preview {
+      background: rgba(8,8,8,0.97);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 56px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.95rem; font-weight: 800; letter-spacing: -0.02em;
+    }
+    .nav-logo-box {
+      width: 34px; height: 34px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.58rem; font-weight: 900; color: #000; letter-spacing: 0.02em;
+    }
+    .nav-logo .dot { color: var(--accent); }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a { font-size: 0.85rem; font-weight: 500; color: var(--muted); text-decoration: none; }
+    .nav-links a.active { color: var(--white); }
+    .nav-cta {
+      background: var(--accent); color: #000;
+      font-size: 0.82rem; font-weight: 700;
+      padding: 8px 18px; border-radius: 8px; text-decoration: none;
+    }
+
+    /* ---- HERO ---- */
+    .hero-preview {
+      position: relative; overflow: hidden;
+      border: 1px solid var(--border); border-radius: 24px;
+      padding: 64px 52px; margin-bottom: 56px;
+      background: var(--bg2);
+    }
+    /* Subtle grain texture */
+    .hero-preview::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0;
+    }
+    .hero-preview::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 500px 350px at 85% 40%, rgba(249,115,22,0.06) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+    .hero-preview > * { position: relative; z-index: 1; }
+
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.18);
+      padding: 6px 14px; border-radius: 100px; margin-bottom: 28px;
+    }
+    .eyebrow .dot {
+      width: 5px; height: 5px; background: var(--accent);
+      border-radius: 50%; animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .eyebrow span { font-size: 0.75rem; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .hero-preview h1 { margin-bottom: 20px; color: var(--white); }
+    .hero-preview h1 .accent { color: var(--accent); }
+    .hero-preview p { margin-bottom: 36px; max-width: 500px; font-size: 1.05rem; color: #808080; line-height: 1.7; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* ---- BUTTONS ---- */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 0.9rem; font-weight: 700; padding: 13px 26px;
+      border-radius: var(--radius); border: none; cursor: pointer;
+      text-decoration: none; transition: all 0.2s ease;
+      letter-spacing: -0.01em;
+    }
+    .btn-primary {
+      background: var(--accent); color: #000;
+      box-shadow: 0 0 0 0 rgba(249,115,22,0);
+    }
+    .btn-primary:hover {
+      background: var(--accent2);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(249,115,22,0.3);
+    }
+    .btn-outline {
+      background: transparent; color: #aaa;
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: #333; color: var(--white); transform: translateY(-2px); }
+
+    /* ---- STATS ---- */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 56px; }
+    .stat-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px 20px;
+    }
+    .stat-card .num { font-size: 1.9rem; font-weight: 800; color: var(--accent); line-height: 1; letter-spacing: -0.02em; }
+    .stat-card .lbl { font-size: 0.78rem; color: var(--muted); margin-top: 6px; }
+
+    /* ---- FEATURE CARDS ---- */
+    .cards-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 56px; }
+    .card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      transition: border-color 0.2s ease;
+    }
+    .card:hover { border-color: #2a2a2a; }
+    .card-num {
+      font-size: 2.4rem; font-weight: 900;
+      color: rgba(249,115,22,0.12);
+      line-height: 1; margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .card h3 { margin-bottom: 8px; color: var(--white); font-size: 0.98rem; }
+    .card p { font-size: 0.86rem; line-height: 1.65; }
+
+    /* ---- QUOTE ---- */
+    .quote {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-left: 2px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 24px 28px; margin-bottom: 56px;
+      font-size: 1rem; font-style: italic; font-weight: 500;
+      color: #c0c0c0; line-height: 1.75;
+    }
+    .quote .author { margin-top: 14px; font-size: 0.8rem; color: var(--muted); font-style: normal; font-weight: 600; }
+
+    /* ---- PRICING ---- */
+    .pricing-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 56px; }
+    .pricing-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px; transition: border-color 0.2s ease;
+    }
+    .pricing-card.popular { border-color: rgba(249,115,22,0.35); }
+    .popular-badge {
+      display: inline-block; background: var(--accent); color: #000;
+      font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.1em; padding: 3px 10px; border-radius: 100px; margin-bottom: 20px;
+    }
+    .pricing-card .price { font-size: 2rem; font-weight: 800; color: var(--white); line-height: 1; letter-spacing: -0.02em; }
+    .pricing-card .price span { font-size: 0.88rem; color: var(--muted); font-weight: 400; }
+    .pricing-card .duration { font-size: 0.8rem; color: var(--muted); margin: 6px 0 22px; }
+    .pricing-card ul { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+    .pricing-card ul li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.86rem; color: #888; }
+    .check { color: var(--accent); flex-shrink: 0; font-size: 0.8rem; margin-top: 2px; }
+
+    /* ---- CTA STRIP ---- */
+    .cta-strip {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 52px; text-align: center; margin-bottom: 56px;
+      position: relative; overflow: hidden;
+    }
+    .cta-strip::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 600px 300px at 50% 100%, rgba(249,115,22,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-strip > * { position: relative; z-index: 1; }
+    .cta-strip h2 { margin-bottom: 12px; }
+    .cta-strip p  { max-width: 440px; margin: 0 auto 32px; font-size: 1rem; }
+
+    /* ---- PAIN ITEMS ---- */
+    .pain-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 56px; }
+    .pain-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 18px 20px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .pain-icon {
+      width: 36px; height: 36px; min-width: 36px;
+      background: var(--bg3); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #444; flex-shrink: 0;
+    }
+    .pain-item h4 { font-size: 0.92rem; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .pain-item p  { font-size: 0.83rem; margin: 0; line-height: 1.55; }
+
+    /* ---- TIMELINE ---- */
+    .timeline-mini { display: flex; flex-direction: column; margin-bottom: 56px; }
+    .tl-item { display: flex; gap: 20px; }
+    .tl-line { display: flex; flex-direction: column; align-items: center; }
+    .tl-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 6px; }
+    .tl-bar { width: 1px; background: var(--border); flex: 1; min-height: 28px; }
+    .tl-content { padding-bottom: 26px; }
+    .tl-year { font-size: 0.75rem; font-weight: 700; color: var(--accent); margin-bottom: 3px; letter-spacing: 0.04em; }
+    .tl-content h3 { font-size: 0.95rem; margin-bottom: 3px; }
+    .tl-content p  { font-size: 0.83rem; }
+
+    /* ---- FOOTER ---- */
+    .footer-preview {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px 28px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { font-size: 0.95rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .footer-logo .dot { color: var(--accent); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-size: 0.8rem; color: var(--muted); text-decoration: none; }
+    .footer-copy { font-size: 0.76rem; color: #333; }
+    .social-link {
+      height: 28px; padding: 0 10px; border-radius: 6px;
+      background: var(--bg3); border: 1px solid var(--border);
+      display: inline-flex; align-items: center;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em;
+      color: var(--muted); text-decoration: none;
+    }
+    .social-row { display: flex; gap: 6px; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-title">
+    <h2>Refined Preview — Same Orange, Better Execution</h2>
+    <p>Your actual site is untouched.</p>
+    <span class="tag">Orange stays · Everything else tightened</span>
+  </div>
+
+  <!-- Navbar -->
+  <span class="section-label">Navbar</span>
+  <nav class="nav-preview">
+    <div class="nav-logo">
+      <div class="nav-logo-box">GFWA</div>
+      GetFitWithAdin<span class="dot">.</span>
+    </div>
+    <div class="nav-links">
+      <a href="#" class="active">Home</a>
+      <a href="#">Coaching</a>
+      <a href="#">About</a>
+      <a href="#" class="nav-cta">Work With Me</a>
+    </div>
+  </nav>
+
+  <hr class="divider" />
+
+  <!-- Hero -->
+  <span class="section-label">Hero Section</span>
+  <div class="hero-preview">
+    <div class="eyebrow">
+      <div class="dot"></div>
+      <span>ICN Hyderabad 2025 · Gold Medalist · Natural</span>
+    </div>
+    <h1>
+      From <span class="accent">117kg</span> to<br/>
+      a Gold Medal.<br/>
+      While Working.
+    </h1>
+    <p>I was 117kg during engineering with no fitness background. I built a system, won gold at a national natural bodybuilding show, and coached 50+ people — all while holding a full-time corporate job.</p>
+    <div class="hero-actions">
+      <a href="#" class="btn btn-primary">Start Your Transformation</a>
+      <a href="#" class="btn btn-outline">My Story</a>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <span class="section-label">Stats</span>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="num">50+</div>
+      <div class="lbl">People Transformed</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">Gold</div>
+      <div class="lbl">ICN Hyderabad 2025</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">117</div>
+      <div class="lbl">Where I Started (kg)</div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Pain items -->
+  <span class="section-label">Pain Section</span>
+  <div class="pain-list">
+    <div class="pain-item">
+      <div class="pain-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      </div>
+      <div>
+        <h4>You Know What to Do, But Don't Do It</h4>
+        <p>You've read the articles, watched the videos. The problem is execution, not information.</p>
+      </div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      </div>
+      <div>
+        <h4>Monday Starts, Friday Quits</h4>
+        <p>The restart cycle is exhausting. You go hard, burn out, and feel worse than before.</p>
+      </div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      </div>
+      <div>
+        <h4>Work Takes Over Every Time</h4>
+        <p>Deadlines, meetings, travel. Your schedule is unpredictable and your plan doesn't survive it.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Feature Cards -->
+  <span class="section-label">Feature Cards</span>
+  <div class="cards-row">
+    <div class="card">
+      <div class="card-num">01</div>
+      <h3>Real Experience</h3>
+      <p>117kg to competition stage while working full time. I've lived the process.</p>
+    </div>
+    <div class="card">
+      <div class="card-num">02</div>
+      <h3>1:1 Coaching</h3>
+      <p>No generic plans. Built entirely around your schedule and lifestyle.</p>
+    </div>
+    <div class="card">
+      <div class="card-num">03</div>
+      <h3>WhatsApp Support</h3>
+      <p>Daily check-ins, form reviews, adjustments — always accessible.</p>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Pricing -->
+  <span class="section-label">Pricing Cards</span>
+  <div class="pricing-row">
+    <div class="pricing-card">
+      <div class="price">₹8,000 <span>/ month</span></div>
+      <div class="duration">3 month minimum</div>
+      <ul>
+        <li><span class="check">✓</span> Custom workout plan</li>
+        <li><span class="check">✓</span> Diet plan</li>
+        <li><span class="check">✓</span> Weekly check-ins</li>
+      </ul>
+      <a href="#" class="btn btn-outline" style="width:100%;">Get Started</a>
+    </div>
+    <div class="pricing-card popular">
+      <div class="popular-badge">Most Popular</div>
+      <div class="price">₹12,000 <span>/ month</span></div>
+      <div class="duration">3 month minimum</div>
+      <ul>
+        <li><span class="check">✓</span> Custom workout plan</li>
+        <li><span class="check">✓</span> Diet + supplement plan</li>
+        <li><span class="check">✓</span> Daily check-ins</li>
+        <li><span class="check">✓</span> Form video reviews</li>
+      </ul>
+      <a href="#" class="btn btn-primary" style="width:100%;">Get Started</a>
+    </div>
+    <div class="pricing-card">
+      <div class="price">₹18,000 <span>/ month</span></div>
+      <div class="duration">3 month minimum</div>
+      <ul>
+        <li><span class="check">✓</span> Everything in Pro</li>
+        <li><span class="check">✓</span> Competition prep</li>
+        <li><span class="check">✓</span> Stage posing</li>
+      </ul>
+      <a href="#" class="btn btn-outline" style="width:100%;">Get Started</a>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- CTA Strip -->
+  <span class="section-label">CTA Section</span>
+  <div class="cta-strip">
+    <h2>Ready to Transform?</h2>
+    <p>50+ people have already changed their bodies and lives. You're next.</p>
+    <a href="#" class="btn btn-primary">Start Your Transformation</a>
+  </div>
+
+  <!-- Quote -->
+  <span class="section-label">Testimonial</span>
+  <div class="quote">
+    "Lost 14kg in 3 months. Adin's system is the most practical thing I've followed — it actually fits around my work life."
+    <div class="author">— Rahul M., Software Engineer</div>
+  </div>
+
+  <!-- Timeline -->
+  <span class="section-label">Timeline</span>
+  <div class="timeline-mini">
+    <div class="tl-item">
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-bar"></div></div>
+      <div class="tl-content">
+        <div class="tl-year">2019</div>
+        <h3>Started at 117kg</h3>
+        <p>No fitness background, just a decision to change.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-bar"></div></div>
+      <div class="tl-content">
+        <div class="tl-year">2022</div>
+        <h3>First Competition</h3>
+        <p>Stepped on stage for the first time while working full time.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-bar"></div></div>
+      <div class="tl-content">
+        <div class="tl-year">2025</div>
+        <h3>ICN Hyderabad Gold</h3>
+        <p>Won gold at a national natural bodybuilding show.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Footer -->
+  <span class="section-label">Footer</span>
+  <div class="footer-preview">
+    <div class="footer-logo">
+      <div class="nav-logo-box" style="width:28px;height:28px;font-size:0.52rem;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;">GFWA</div>
+      GetFitWithAdin<span class="dot">.</span>
+    </div>
+    <div class="footer-links">
+      <a href="#">Home</a>
+      <a href="#">Coaching</a>
+      <a href="#">About</a>
+    </div>
+    <div class="social-row">
+      <a href="#" class="social-link">IG</a>
+      <a href="#" class="social-link">LI</a>
+    </div>
+    <div class="footer-copy">© 2025 Adin Ankur Saikia</div>
+  </div>
+
+</div>
+</body>
+</html>
