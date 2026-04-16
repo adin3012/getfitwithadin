@@ -1,18 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://getfitwithadin.com/</loc>
+    <lastmod>2026-04-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://getfitwithadin.com/My%20current%20pictures%20/ICN_Gold.jpeg</image:loc>
+      <image:title>GetFitWithAdin - ICN Gold Medalist Fitness Coach</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://getfitwithadin.com/coaching.html</loc>
+    <lastmod>2026-04-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://getfitwithadin.com/My%20current%20pictures%20/ICN_Gold.jpeg</image:loc>
+      <image:title>Online Fitness Coaching Programs</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://getfitwithadin.com/about.html</loc>
+    <lastmod>2026-04-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://getfitwithadin.com/My%20current%20pictures%20/ICN_Gold.jpeg</image:loc>
+      <image:title>About Adin Saikia - ICN Gold Medalist</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://getfitwithadin.com/117/IMG_7349_Original_Original.jpeg</loc>
+    <lastmod>2026-04-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://getfitwithadin.com/Fat%20Pictures/IMG-20210513-WA0033_Original.jpg</loc>
+    <lastmod>2026-04-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://getfitwithadin.com/Led/DSC06635_Original%205.31.33%E2%80%AFPM.jpeg</loc>
+    <lastmod>2026-04-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 </urlset>
