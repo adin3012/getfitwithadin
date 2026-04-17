@@ -200,7 +200,6 @@ function closeLeadPopup(skipFlag) {
   setTimeout(() => { popup.style.display = 'none'; document.body.style.overflow = ''; }, 300);
 }
 
-function handleLeadCapture() {} // legacy no-op — replaced by popup
 
 // Inject modal into page once
 (function injectApplyModal() {
@@ -404,7 +403,8 @@ function handleFormSubmit() {
   // Log lead to Google Sheets in parallel (fire and forget)
   submitLeadToSheets({ name, email, interest, source: 'apply-modal' });
 
-  fetch('https://getfitwithadin.onrender.com/api/contact', {
+  const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://getfitwithadin.com';
+  fetch(`${API_BASE}/api/contact`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email, weight, height, age, activity, interest, message })
