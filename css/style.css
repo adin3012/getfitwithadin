@@ -83,7 +83,8 @@ nav {
   width: 28px;
   height: 28px;
   border-radius: 6px;
-  object-fit: cover;
+  object-fit: contain;
+  display: block;
   filter: hue-rotate(-30deg) saturate(1.4) brightness(0.95);
   flex-shrink: 0;
 }
