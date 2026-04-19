@@ -9,10 +9,10 @@ const ACTIVITY_LABELS = {
   active:    'Very Active (5+ days/week)'
 };
 const PROGRAMME_LABELS = {
-  monthly:       'Monthly — ₹6,000',
-  quarterly:     'Quarterly — ₹15,000',
-  'half-yearly': 'Half Yearly — ₹27,000',
-  annual:        'Annual — ₹51,000',
+  monthly:       'Monthly — ₹5,000',
+  quarterly:     'Quarterly — ₹12,000',
+  'half-yearly': 'Half Yearly — ₹23,000',
+  annual:        'Annual — ₹46,000',
   'just-curious':'Not sure yet, just exploring'
 };
 
