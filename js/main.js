@@ -128,48 +128,36 @@ function submitLeadToSheets(data) {
   fetch(GOOGLE_FORM_ACTION, { method: 'POST', mode: 'no-cors', body });
 }
 
-// ---------- Entry Lead Popup ----------
+// ---------- Entry Lead Gate (mandatory — cannot be skipped) ----------
 (function injectLeadPopup() {
-  if (localStorage.getItem('gfwa_lead_captured')) return;
+  if (localStorage.getItem('gfwa_lead_captured') === '1') return;
   if (document.getElementById('leadPopup')) return;
 
   const html = `
-  <div class="apply-modal" id="leadPopup">
+  <div class="apply-modal" id="leadPopup" style="display:flex;opacity:1;">
     <div class="apply-modal-content" style="max-width:460px;">
-      <button class="apply-modal-close" onclick="closeLeadPopup(true)" aria-label="Close">✕</button>
       <div id="leadPopupForm">
         <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;">Free Consultation</p>
         <h2 style="font-size:1.5rem;margin-bottom:8px;">Before you explore —</h2>
         <p class="modal-sub">Drop your details and I'll personally reach out to answer any questions.</p>
         <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px;">
-          <input type="text"  id="lpName"     placeholder="Your name *"            style="padding:13px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;outline:none;font-family:inherit;" />
-          <input type="email" id="lpEmail"    placeholder="Email address *"        style="padding:13px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;outline:none;font-family:inherit;" />
-          <input type="tel"   id="lpWhatsApp" placeholder="WhatsApp number (optional)" style="padding:13px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;outline:none;font-family:inherit;" />
-          <button id="lpSubmitBtn" onclick="handleLeadPopupSubmit()" class="btn btn-primary" style="justify-content:center;margin-top:4px;">Get in Touch</button>
-          <button onclick="closeLeadPopup(true)" style="background:none;border:none;color:var(--muted);font-size:0.82rem;cursor:pointer;font-family:inherit;padding:4px;">No thanks, I'll just browse</button>
+          <input type="text"  id="lpName"     placeholder="Your name *"        style="padding:13px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;outline:none;font-family:inherit;" />
+          <input type="email" id="lpEmail"    placeholder="Email address *"    style="padding:13px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;outline:none;font-family:inherit;" />
+          <input type="tel"   id="lpWhatsApp" placeholder="WhatsApp number *"  style="padding:13px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;outline:none;font-family:inherit;" />
+          <button id="lpSubmitBtn" onclick="handleLeadPopupSubmit()" class="btn btn-primary" style="justify-content:center;margin-top:4px;">Explore the Site →</button>
         </div>
       </div>
       <div id="leadPopupSuccess" style="display:none;text-align:center;padding:32px 0;">
         <div style="font-size:2rem;margin-bottom:12px;">👋</div>
         <h3 style="margin-bottom:8px;">Got it — I'll reach out soon.</h3>
-        <p style="color:var(--muted);font-size:0.9rem;">Feel free to explore the site in the meantime.</p>
+        <p style="color:var(--muted);font-size:0.9rem;">Taking you in now...</p>
       </div>
     </div>
   </div>`;
 
   document.body.insertAdjacentHTML('beforeend', html);
-  document.getElementById('leadPopup').addEventListener('click', e => {
-    if (e.target === document.getElementById('leadPopup')) closeLeadPopup(true);
-  });
-
-  // Show after 5 seconds
-  setTimeout(() => {
-    const popup = document.getElementById('leadPopup');
-    if (popup && !localStorage.getItem('gfwa_lead_captured')) {
-      popup.style.display = 'flex';
-      requestAnimationFrame(() => { popup.style.opacity = '1'; });
-    }
-  }, 5000);
+  // Lock scroll until submitted
+  document.body.style.overflow = 'hidden';
 })();
 
 function handleLeadPopupSubmit() {
@@ -177,11 +165,12 @@ function handleLeadPopupSubmit() {
   const email    = (document.getElementById('lpEmail')?.value || '').trim();
   const whatsapp = (document.getElementById('lpWhatsApp')?.value || '').trim();
 
-  if (!name) { document.getElementById('lpName').focus(); return; }
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('lpEmail').focus(); return; }
+  if (!name)    { document.getElementById('lpName').style.borderColor='var(--accent)'; document.getElementById('lpName').focus(); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('lpEmail').style.borderColor='var(--accent)'; document.getElementById('lpEmail').focus(); return; }
+  if (!whatsapp){ document.getElementById('lpWhatsApp').style.borderColor='var(--accent)'; document.getElementById('lpWhatsApp').focus(); return; }
 
   const btn = document.getElementById('lpSubmitBtn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Just a sec...'; }
 
   submitLeadToSheets({ name, email, whatsapp, source: 'entry-popup' });
   localStorage.setItem('gfwa_lead_captured', '1');
@@ -189,13 +178,12 @@ function handleLeadPopupSubmit() {
   document.getElementById('leadPopupForm').style.display    = 'none';
   document.getElementById('leadPopupSuccess').style.display = 'block';
 
-  setTimeout(() => closeLeadPopup(false), 2500);
+  setTimeout(() => closeLeadPopup(), 2500);
 }
 
-function closeLeadPopup(skipFlag) {
+function closeLeadPopup() {
   const popup = document.getElementById('leadPopup');
   if (!popup) return;
-  if (skipFlag) localStorage.setItem('gfwa_lead_captured', 'skipped');
   popup.style.opacity = '0';
   setTimeout(() => { popup.style.display = 'none'; document.body.style.overflow = ''; }, 300);
 }
