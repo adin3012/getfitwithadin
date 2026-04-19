@@ -424,6 +424,10 @@ nav {
   letter-spacing: 0.08em; padding: 4px 12px; border-radius: 100px;
   margin-bottom: 20px;
 }
+.pricing-card .price-orig {
+  font-size: 1.1rem; font-weight: 600; color: var(--muted);
+  text-decoration: line-through; line-height: 1; margin-bottom: 4px;
+}
 .pricing-card .price {
   font-size: 2.4rem; font-weight: 800; color: var(--white);
   line-height: 1;

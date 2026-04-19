@@ -92,10 +92,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // ---------- Contact Form ----------
 // ---------- Apply Now Modal ----------
 const PRICING = {
-  IN: { symbol: '₹', monthly: '6,000',  quarterly: '15,000', halfYearly: '27,000', annual: '51,000', flag: '🇮🇳 India' },
-  US: { symbol: '$', monthly: '110',    quarterly: '280',    halfYearly: '505',    annual: '955',    flag: '🇺🇸 USA' },
-  AU: { symbol: 'A$',monthly: '125',    quarterly: '310',    halfYearly: '555',    annual: '1,050',  flag: '🇦🇺 Australia' },
-  AE: { symbol: 'AED',monthly: '450',   quarterly: '1,125',  halfYearly: '2,025',  annual: '3,825',  flag: '🇦🇪 UAE' },
+  IN: { symbol: '₹', monthly: '5,000',  quarterly: '12,000', halfYearly: '23,000', annual: '46,000', flag: '🇮🇳 India' },
+  US: { symbol: '$', monthly: '89',     quarterly: '224',    halfYearly: '429',    annual: '859',    flag: '🇺🇸 USA' },
+  AU: { symbol: 'A$',monthly: '99',     quarterly: '248',    halfYearly: '472',    annual: '945',    flag: '🇦🇺 Australia' },
+  AE: { symbol: 'AED',monthly: '375',   quarterly: '900',    halfYearly: '1,720',  annual: '3,440',  flag: '🇦🇪 UAE' },
 };
 
 // ---------- Google Sheets Lead Capture ----------
@@ -268,10 +268,10 @@ function closeLeadPopup() {
             <label for="interest">Programme of Interest</label>
             <select id="interest" required>
               <option value="">Select a programme</option>
-              <option value="monthly">Monthly — ₹6,000</option>
-              <option value="quarterly">Quarterly — ₹15,000</option>
-              <option value="half-yearly">Half Yearly — ₹27,000</option>
-              <option value="annual">Annual — ₹51,000</option>
+              <option value="monthly">Monthly — ₹5,000</option>
+              <option value="quarterly">Quarterly — ₹12,000</option>
+              <option value="half-yearly">Half Yearly — ₹23,000</option>
+              <option value="annual">Annual — ₹46,000</option>
               <option value="just-curious">Not sure yet, just exploring</option>
             </select>
           </div>
@@ -539,19 +539,20 @@ function updatePricing() {
   const selectedOption = select.options[select.selectedIndex];
   const symbol = selectedOption.dataset.symbol;
   
-  const prices = document.querySelectorAll('.pricing-card .price[data-plan]');
-  
-  prices.forEach(priceEl => {
-    const plan = priceEl.dataset.plan;
-    const price = selectedOption.dataset[plan];
-    
-    let formattedPrice;
-    if (symbol === '₹') {
-      formattedPrice = `${symbol}${parseInt(price).toLocaleString('en-IN')}`;
-    } else {
-      formattedPrice = `${symbol}${parseInt(price).toLocaleString()}`;
-    }
-    
-    priceEl.textContent = formattedPrice;
+  function fmt(sym, val) {
+    return sym === '₹'
+      ? `${sym}${parseInt(val).toLocaleString('en-IN')}`
+      : `${sym}${parseInt(val).toLocaleString()}`;
+  }
+
+  // Update offer prices
+  document.querySelectorAll('.pricing-card .price[data-plan]').forEach(el => {
+    el.textContent = fmt(symbol, selectedOption.dataset[el.dataset.plan]);
+  });
+
+  // Update original (strikethrough) prices
+  document.querySelectorAll('.pricing-card .price-orig[data-plan-orig]').forEach(el => {
+    const key = el.dataset.planOrig + 'Orig';
+    el.textContent = fmt(symbol, selectedOption.dataset[el.dataset.planOrig + '-orig'] || selectedOption.dataset[key]);
   });
 }

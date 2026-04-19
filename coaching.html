@@ -289,10 +289,10 @@
       <div class="country-selector">
         <label for="countrySelect">Select your country:</label>
         <select id="countrySelect" onchange="updatePricing()">
-          <option value="IN" data-monthly="6000" data-quarterly="15000" data-halfyearly="27000" data-annual="51000" data-symbol="₹">🇮🇳 India</option>
-          <option value="US" data-monthly="110" data-quarterly="280" data-halfyearly="505" data-annual="955" data-symbol="$">🇺🇸 USA</option>
-          <option value="AU" data-monthly="125" data-quarterly="310" data-halfyearly="555" data-annual="1050" data-symbol="A$">🇦🇺 Australia</option>
-          <option value="AE" data-monthly="450" data-quarterly="1125" data-halfyearly="2025" data-annual="3825" data-symbol="AED">🇦🇪 UAE</option>
+          <option value="IN" data-monthly="5000" data-monthly-orig="6000" data-quarterly="12000" data-quarterly-orig="15000" data-halfyearly="23000" data-halfyearly-orig="27000" data-annual="46000" data-annual-orig="51000" data-symbol="₹">🇮🇳 India</option>
+          <option value="US" data-monthly="89" data-monthly-orig="110" data-quarterly="224" data-quarterly-orig="280" data-halfyearly="429" data-halfyearly-orig="505" data-annual="859" data-annual-orig="955" data-symbol="$">🇺🇸 USA</option>
+          <option value="AU" data-monthly="99" data-monthly-orig="125" data-quarterly="248" data-quarterly-orig="310" data-halfyearly="472" data-halfyearly-orig="555" data-annual="945" data-annual-orig="1050" data-symbol="A$">🇦🇺 Australia</option>
+          <option value="AE" data-monthly="375" data-monthly-orig="450" data-quarterly="900" data-quarterly-orig="1125" data-halfyearly="1720" data-halfyearly-orig="2025" data-annual="3440" data-annual-orig="3825" data-symbol="AED">🇦🇪 UAE</option>
         </select>
       </div>
 
@@ -300,7 +300,8 @@
 
         <div class="pricing-card">
           <h3 style="margin-bottom:12px;">Monthly</h3>
-          <div class="price" data-plan="monthly">₹6,000</div>
+          <div class="price-orig" data-plan-orig="monthly">₹6,000</div>
+          <div class="price" data-plan="monthly">₹5,000</div>
           <div class="duration">1 Month Programme</div>
           <ul>
             <li><span class="check">&#10003;</span> 7-day data collection phase</li>
@@ -316,7 +317,8 @@
 
         <div class="pricing-card">
           <h3 style="margin-bottom:12px;">Quarterly</h3>
-          <div class="price" data-plan="quarterly">₹15,000</div>
+          <div class="price-orig" data-plan-orig="quarterly">₹15,000</div>
+          <div class="price" data-plan="quarterly">₹12,000</div>
           <div class="duration">3 Month Programme</div>
           <ul>
             <li><span class="check">&#10003;</span> 7-day data collection phase</li>
@@ -333,7 +335,8 @@
         <div class="pricing-card popular">
           <div class="popular-badge">Best Value</div>
           <h3 style="margin-bottom:12px;">Half Yearly</h3>
-          <div class="price" data-plan="halfyearly">₹27,000</div>
+          <div class="price-orig" data-plan-orig="halfyearly">₹27,000</div>
+          <div class="price" data-plan="halfyearly">₹23,000</div>
           <div class="duration">6 Month Programme</div>
           <ul>
             <li><span class="check">&#10003;</span> 7-day data collection phase</li>
@@ -349,7 +352,8 @@
 
         <div class="pricing-card">
           <h3 style="margin-bottom:12px;">Annual</h3>
-          <div class="price" data-plan="annual">₹51,000</div>
+          <div class="price-orig" data-plan-orig="annual">₹51,000</div>
+          <div class="price" data-plan="annual">₹46,000</div>
           <div class="duration">12 Month Programme</div>
           <ul>
             <li><span class="check">&#10003;</span> 7-day data collection phase</li>
