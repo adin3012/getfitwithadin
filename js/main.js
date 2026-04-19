@@ -173,6 +173,11 @@ function handleLeadPopupSubmit() {
   if (btn) { btn.disabled = true; btn.textContent = 'Just a sec...'; }
 
   submitLeadToSheets({ name, email, whatsapp, source: 'entry-popup' });
+  fetch('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, whatsapp, interest: 'just-curious', source: 'entry-popup' })
+  }).catch(() => {});
   localStorage.setItem('gfwa_lead_captured', '1');
 
   document.getElementById('leadPopupForm').style.display    = 'none';
