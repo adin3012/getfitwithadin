@@ -373,6 +373,12 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({ error: 'Too many requests. Please wait a minute.' }));
       return;
     }
+    const contentType = req.headers['content-type'] || '';
+    if (!contentType.includes('application/json')) {
+      res.writeHead(415, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Content-Type must be application/json' }));
+      return;
+    }
     try {
       const body  = await readBody(req);
       const data  = JSON.parse(body);

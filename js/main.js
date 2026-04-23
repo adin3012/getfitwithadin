@@ -134,16 +134,16 @@ function submitLeadToSheets(data) {
   if (document.getElementById('leadPopup')) return;
 
   const html = `
-  <div class="apply-modal" id="leadPopup" style="display:flex;opacity:1;">
+  <div class="apply-modal" id="leadPopup" style="display:flex;opacity:1;" role="dialog" aria-modal="true" aria-labelledby="lpTitle">
     <div class="apply-modal-content" style="max-width:460px;">
       <div id="leadPopupForm">
         <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;">Free Consultation</p>
-        <h2 style="font-size:1.5rem;margin-bottom:8px;">Before you explore —</h2>
+        <h2 id="lpTitle" style="font-size:1.5rem;margin-bottom:8px;">Before you explore —</h2>
         <p class="modal-sub">Drop your details and I'll personally reach out to answer any questions.</p>
         <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px;">
-          <input type="text"  id="lpName"     placeholder="Your name *"        style="padding:13px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;outline:none;font-family:inherit;" />
-          <input type="email" id="lpEmail"    placeholder="Email address *"    style="padding:13px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;outline:none;font-family:inherit;" />
-          <input type="tel"   id="lpWhatsApp" placeholder="WhatsApp number *"  style="padding:13px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;outline:none;font-family:inherit;" />
+          <input type="text"  id="lpName"     placeholder="Your name *"        aria-label="Your name" style="padding:13px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;outline:none;font-family:inherit;" />
+          <input type="email" id="lpEmail"    placeholder="Email address *"    aria-label="Email address" style="padding:13px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;outline:none;font-family:inherit;" />
+          <input type="tel"   id="lpWhatsApp" placeholder="WhatsApp number *"  aria-label="WhatsApp number" style="padding:13px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;outline:none;font-family:inherit;" />
           <button id="lpSubmitBtn" onclick="handleLeadPopupSubmit()" class="btn btn-primary" style="justify-content:center;margin-top:4px;">Explore the Site →</button>
         </div>
       </div>
@@ -166,8 +166,8 @@ function handleLeadPopupSubmit() {
   const whatsapp = (document.getElementById('lpWhatsApp')?.value || '').trim();
 
   if (!name)    { document.getElementById('lpName').style.borderColor='var(--accent)'; document.getElementById('lpName').focus(); return; }
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('lpEmail').style.borderColor='var(--accent)'; document.getElementById('lpEmail').focus(); return; }
-  if (!whatsapp){ document.getElementById('lpWhatsApp').style.borderColor='var(--accent)'; document.getElementById('lpWhatsApp').focus(); return; }
+  if (!email || !validateEmail(email)) { document.getElementById('lpEmail').style.borderColor='var(--accent)'; document.getElementById('lpEmail').focus(); return; }
+  if (!whatsapp || !validateWhatsApp(whatsapp)) { document.getElementById('lpWhatsApp').style.borderColor='var(--accent)'; document.getElementById('lpWhatsApp').focus(); return; }
 
   const btn = document.getElementById('lpSubmitBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Just a sec...'; }
@@ -198,13 +198,13 @@ function closeLeadPopup() {
 (function injectApplyModal() {
   if (document.getElementById('applyModal')) return;
   const html = `
-  <div class="apply-modal" id="applyModal">
+  <div class="apply-modal" id="applyModal" role="dialog" aria-modal="true" aria-labelledby="applyTitle">
     <div class="apply-modal-content">
-      <button class="apply-modal-close" onclick="closeApplyModal()">✕</button>
+      <button class="apply-modal-close" onclick="closeApplyModal()" aria-label="Close modal">✕</button>
 
       <!-- Step 1: WhatsApp or Form -->
       <div id="applyStep1">
-        <h2>How would you like to apply?</h2>
+        <h2 id="applyTitle">How would you like to apply?</h2>
         <p class="modal-sub">Choose your preferred way to get in touch.</p>
         <div style="display:flex;flex-direction:column;gap:12px;margin-top:28px;">
           <button class="btn btn-wa-full" onclick="applyViaWhatsApp()">
@@ -222,8 +222,8 @@ function closeLeadPopup() {
       </div>
 
       <!-- Step 2: Form -->
-      <div id="applyStep2" style="display:none;">
-        <h2>Start Your Transformation</h2>
+      <div id="applyStep2" style="display:none;" aria-labelledby="applyFormTitle">
+        <h2 id="applyFormTitle">Start Your Transformation</h2>
         <p class="modal-sub">Fill in your details and I will get back to you within 24 hours.</p>
         <div id="contactForm">
           <div class="form-group">
@@ -237,30 +237,30 @@ function closeLeadPopup() {
           </div>
           <div class="form-group">
             <label for="name">Your Name</label>
-            <input type="text" id="name" placeholder="e.g. John Smith" required maxlength="80" autocomplete="name" />
+            <input type="text" id="name" placeholder="e.g. John Smith" required maxlength="80" autocomplete="name" aria-required="true" />
           </div>
           <div class="form-group">
             <label for="email">Email Address</label>
-            <input type="email" id="email" placeholder="john@example.com" required maxlength="120" autocomplete="email" />
+            <input type="email" id="email" placeholder="john@example.com" required maxlength="120" autocomplete="email" aria-required="true" />
           </div>
           <div class="form-row">
             <div class="form-group">
               <label for="weight">Current Weight (kg)</label>
-              <input type="number" id="weight" placeholder="e.g. 85" min="30" max="300" required />
+              <input type="number" id="weight" placeholder="e.g. 85" min="30" max="300" required aria-required="true" />
             </div>
             <div class="form-group">
               <label for="height">Height (cm)</label>
-              <input type="number" id="height" placeholder="e.g. 175" min="100" max="250" required />
+              <input type="number" id="height" placeholder="e.g. 175" min="100" max="250" required aria-required="true" />
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label for="age">Age</label>
-              <input type="number" id="age" placeholder="e.g. 28" min="16" max="80" required />
+              <input type="number" id="age" placeholder="e.g. 28" min="16" max="80" required aria-required="true" />
             </div>
             <div class="form-group">
               <label for="activity">Activity Level</label>
-              <select id="activity" required>
+              <select id="activity" required aria-required="true">
                 <option value="">Select level</option>
                 <option value="sedentary">Sedentary (desk job, no exercise)</option>
                 <option value="light">Lightly Active (1–2 days/week)</option>
@@ -271,7 +271,7 @@ function closeLeadPopup() {
           </div>
           <div class="form-group">
             <label for="interest">Programme of Interest</label>
-            <select id="interest" required>
+            <select id="interest" required aria-required="true">
               <option value="">Select a programme</option>
               <option value="monthly">Monthly — ₹5,000</option>
               <option value="quarterly">Quarterly — ₹12,000</option>
@@ -282,7 +282,7 @@ function closeLeadPopup() {
           </div>
           <div class="form-group">
             <label for="message">Your Goal</label>
-            <textarea id="message" placeholder="What is your primary goal? Weight loss, muscle gain, body recomposition?" maxlength="1000" required></textarea>
+            <textarea id="message" placeholder="What is your primary goal? Weight loss, muscle gain, body recomposition?" maxlength="1000" required aria-required="true"></textarea>
           </div>
           <button type="button" class="btn btn-primary" id="submitBtn" style="width:100%;justify-content:center;" onclick="handleFormSubmit()">
             Send My Details
@@ -357,6 +357,18 @@ function sanitize(str, maxLen) {
   return str.replace(/[<>"'`]/g, '').slice(0, maxLen).trim();
 }
 
+function validateEmail(email) {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
+}
+
+function validateWhatsApp(whatsapp) {
+  if (!whatsapp) return false;
+  const cleaned = whatsapp.replace(/[\s\-\(\)]/g, '');
+  const waRegex = /^(\+?91|0)?[6-9]\d{9}$/;
+  return waRegex.test(cleaned) && cleaned.length >= 10;
+}
+
 function handleFormSubmit() {
   const name     = sanitize(document.getElementById('name')?.value, 80);
   const email    = sanitize(document.getElementById('email')?.value, 120);
@@ -376,8 +388,7 @@ function handleFormSubmit() {
   if (+height < 100 || +height > 250) { alert('Please enter a valid height (100–250 cm).'); return; }
   if (+age < 16 || +age > 80) { alert('Please enter a valid age (16–80).'); return; }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
+  if (!validateEmail(email)) {
     alert('Please enter a valid email address.');
     return;
   }

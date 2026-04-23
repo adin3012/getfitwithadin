@@ -108,6 +108,10 @@ async function sendEmailNotification(data) {
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
+  const contentType = event.headers['content-type'] || '';
+  if (!contentType.includes('application/json')) {
+    return { statusCode: 415, body: JSON.stringify({ error: 'Content-Type must be application/json' }) };
+  }
   if ((event.body || '').length > 10240) return { statusCode: 413, body: JSON.stringify({ error: 'Too large' }) };
 
   let raw;
