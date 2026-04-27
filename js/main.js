@@ -454,15 +454,13 @@ if (testimonialsScroll) {
 window.addEventListener('scroll', () => {
   const nav = document.querySelector('nav');
   if (!nav) return;
-  if (window.scrollY > 40) {
-    nav.style.boxShadow = '0 4px 24px rgba(0,0,0,0.4)';
-  } else {
-    nav.style.boxShadow = 'none';
-  }
+  nav.classList.toggle('scrolled', window.scrollY > 40);
 });
 
 // ---------- Number counter animation ----------
 function animateCounter(el, target, duration = 1500) {
+  if (el.dataset.animated === '1') return;
+  el.dataset.animated = '1';
   let start = 0;
   const step = target / (duration / 16);
   const timer = setInterval(() => {
@@ -485,9 +483,21 @@ const counterObserver = new IntersectionObserver((entries) => {
       counterObserver.unobserve(el);
     }
   });
-}, { threshold: 0.5 });
+}, { threshold: 0 });
 
-document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+// Kick off counters that are already visible (hero section),
+// delayed so the parent CSS fade-in animation has begun.
+setTimeout(() => {
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      const target = parseInt(el.dataset.count, 10);
+      if (!isNaN(target)) animateCounter(el, target);
+    } else {
+      counterObserver.observe(el);
+    }
+  });
+}, 350);
 
 // ---------- Transformation Modal ----------
 function openTransformModal() {

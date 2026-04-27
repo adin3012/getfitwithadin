@@ -66,6 +66,7 @@ nav {
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
   padding: 18px 0;
+  transition: padding 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
 .nav-inner {
   display: flex; align-items: center; justify-content: space-between;
@@ -1373,6 +1374,55 @@ img { display: block; max-width: 100%; height: auto; }
 @keyframes countPulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); color: var(--accent); }
+}
+
+/* ---------- WhatsApp Button Styles ---------- */
+.btn-wa {
+  background: #25D366;
+  color: #fff;
+}
+.btn-wa:hover {
+  background: #1ebe57;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35);
+  color: #fff;
+}
+
+/* ---------- Floating WhatsApp Button (mobile only) ---------- */
+.wa-float {
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #25D366;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 12px 18px 12px 14px;
+  border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.45);
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-family: var(--font);
+}
+.wa-float:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(37, 211, 102, 0.55);
+  color: #fff;
+}
+.wa-float svg { flex-shrink: 0; }
+@media (min-width: 769px) {
+  .wa-float { display: none; }
+}
+
+/* ---------- Sticky Navbar Scrolled State ---------- */
+nav.scrolled {
+  padding: 12px 0;
+  background: rgba(10, 10, 10, 0.97);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 /* ---------- FAQ Accordion ---------- */
