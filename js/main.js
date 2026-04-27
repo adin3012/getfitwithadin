@@ -258,7 +258,7 @@ function showApplyForm() {
 
 function applyViaWhatsApp() {
   closeApplyModal();
-  window.open('https://wa.me/918638740815?text=Hi%20Adin%2C%20I%20want%20to%20start%20coaching', '_blank', 'noopener');
+  window.open('https://wa.me/918638740815?text=Hey%20Adin!%20I%20wanna%20start%20coaching%20with%20you', '_blank', 'noopener');
 }
 
 function updateModalPricing() {
