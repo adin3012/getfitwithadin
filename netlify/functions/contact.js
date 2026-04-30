@@ -7,10 +7,10 @@ const ACTIVITY_LABELS = {
   active:    'Very Active (5+ days/week)'
 };
 const PROGRAMME_LABELS = {
-  monthly:       'Monthly — ₹5,000',
-  quarterly:     'Quarterly — ₹12,000',
-  'half-yearly': 'Half Yearly — ₹23,000',
-  annual:        'Annual — ₹46,000',
+  monthly:       'Monthly — ₹6,000',
+  quarterly:     'Quarterly — ₹15,000',
+  'half-yearly': 'Half Yearly — ₹27,000',
+  annual:        'Annual — ₹51,000',
   'just-curious':'Not sure yet, just exploring'
 };
 
@@ -38,7 +38,7 @@ async function submitToGoogleForm(data) {
     [FORM_FIELDS.email]:    data.email,
     [FORM_FIELDS.whatsapp]: data.whatsapp || '',
     [FORM_FIELDS.interest]: data.interest || '',
-    [FORM_FIELDS.source]:   'apply-modal',
+    [FORM_FIELDS.source]:   data.source || 'apply-modal',
   });
 
   await fetch(GOOGLE_FORM_ACTION, {
@@ -54,7 +54,9 @@ async function sendEmailNotification(data) {
 
   if (!RESEND_API_KEY || !NOTIFY_EMAIL) return;
 
+  const SOURCE_LABELS = { 'entry-popup': 'Entry Popup', 'apply-modal': 'Apply Form' };
   const rows = [
+    data.source   && ['Source',   SOURCE_LABELS[data.source] || data.source],
     ['Name',    data.name],
     ['Email',   data.email],
     data.whatsapp && ['WhatsApp', data.whatsapp],
@@ -118,6 +120,7 @@ exports.handler = async (event) => {
   try { raw = JSON.parse(event.body); }
   catch { return { statusCode: 400, body: JSON.stringify({ error: 'Bad request' }) }; }
 
+  const VALID_SOURCE = ['apply-modal', 'entry-popup', ''];
   const data = {
     name:     sanitize(raw.name,    80),
     email:    sanitize(raw.email,   120),
@@ -128,6 +131,7 @@ exports.handler = async (event) => {
     activity: VALID_ACTIVITY.includes(raw.activity) ? raw.activity : '',
     interest: VALID_INTEREST.includes(raw.interest) ? raw.interest : '',
     message:  sanitize(raw.message, 1000),
+    source:   VALID_SOURCE.includes(raw.source)   ? raw.source   : '',
   };
 
   // Run both in parallel

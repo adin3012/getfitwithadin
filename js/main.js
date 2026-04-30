@@ -92,10 +92,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // ---------- Contact Form ----------
 // ---------- Apply Now Modal ----------
 const PRICING = {
-  IN: { symbol: '₹', monthly: '5,000',  quarterly: '12,000', halfYearly: '23,000', annual: '46,000', flag: '🇮🇳 India' },
-  US: { symbol: '$', monthly: '89',     quarterly: '224',    halfYearly: '429',    annual: '859',    flag: '🇺🇸 USA' },
-  AU: { symbol: 'A$',monthly: '99',     quarterly: '248',    halfYearly: '472',    annual: '945',    flag: '🇦🇺 Australia' },
-  AE: { symbol: 'AED',monthly: '375',   quarterly: '900',    halfYearly: '1,720',  annual: '3,440',  flag: '🇦🇪 UAE' },
+  IN: { symbol: '₹',  monthly: '6,000',  quarterly: '15,000', halfYearly: '27,000', annual: '51,000', flag: '🇮🇳 India' },
+  US: { symbol: '$',  monthly: '110',    quarterly: '280',    halfYearly: '505',    annual: '955',    flag: '🇺🇸 USA' },
+  AU: { symbol: 'A$', monthly: '125',    quarterly: '310',    halfYearly: '555',    annual: '1,050',  flag: '🇦🇺 Australia' },
+  AE: { symbol: 'AED',monthly: '450',    quarterly: '1,125',  halfYearly: '2,025',  annual: '3,825',  flag: '🇦🇪 UAE' },
 };
 
 // ---------- Google Sheets Lead Capture ----------
@@ -126,6 +126,128 @@ function submitLeadToSheets(data) {
   if (data.interest) body.append(LEAD_FIELDS.interest, data.interest);
   if (data.source)   body.append(LEAD_FIELDS.source,   data.source);
   fetch(GOOGLE_FORM_ACTION, { method: 'POST', mode: 'no-cors', body });
+}
+
+// ---------- Entry Popup (optional — dismissible) ----------
+(function injectEntryPopup() {
+  if (localStorage.getItem('gfwa_lead_captured') === '1') return;
+  if (sessionStorage.getItem('gfwa_popup_dismissed') === '1') return;
+  if (document.getElementById('entryPopup')) return;
+
+  const html = `
+  <div class="apply-modal" id="entryPopup" role="dialog" aria-modal="true" aria-labelledby="epTitle" onclick="if(event.target===this)closeEntryPopup()" style="transition:opacity 0.3s ease;">
+    <div class="apply-modal-content" style="max-width:520px;">
+      <button class="apply-modal-close" onclick="closeEntryPopup()" aria-label="Close">✕</button>
+      <div id="entryPopupForm">
+        <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;">Free Consultation</p>
+        <h2 id="epTitle" style="font-size:1.4rem;margin-bottom:6px;">Start Your Transformation</h2>
+        <p class="modal-sub">Fill in your details and I'll personally reach out within 24 hours.</p>
+        <div class="form-group">
+          <label for="epName">Your Name *</label>
+          <input type="text" id="epName" placeholder="e.g. John Smith" maxlength="80" autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="epEmail">Email Address *</label>
+          <input type="email" id="epEmail" placeholder="john@example.com" maxlength="120" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="epWhatsApp">WhatsApp Number *</label>
+          <input type="tel" id="epWhatsApp" placeholder="+91 98765 43210" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="epWeight">Current Weight (kg)</label>
+            <input type="number" id="epWeight" placeholder="e.g. 85" min="30" max="300" />
+          </div>
+          <div class="form-group">
+            <label for="epHeight">Height (cm)</label>
+            <input type="number" id="epHeight" placeholder="e.g. 175" min="100" max="250" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="epAge">Age</label>
+            <input type="number" id="epAge" placeholder="e.g. 28" min="16" max="80" />
+          </div>
+          <div class="form-group">
+            <label for="epActivity">Activity Level</label>
+            <select id="epActivity">
+              <option value="">Select level</option>
+              <option value="sedentary">Sedentary</option>
+              <option value="light">Lightly Active</option>
+              <option value="moderate">Moderately Active</option>
+              <option value="active">Very Active</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="epMessage">Your Goal</label>
+          <textarea id="epMessage" placeholder="What is your primary goal? Weight loss, muscle gain, body recomposition?" maxlength="1000"></textarea>
+        </div>
+        <button id="epSubmitBtn" onclick="handleEntryPopupSubmit()" class="btn btn-primary" style="width:100%;justify-content:center;">Send My Details</button>
+        <p style="text-align:center;margin-top:14px;">
+          <button onclick="closeEntryPopup()" style="background:none;border:none;color:var(--muted);font-size:0.85rem;cursor:pointer;font-family:inherit;text-decoration:underline;">Maybe later</button>
+        </p>
+      </div>
+      <div id="entryPopupSuccess" style="display:none;text-align:center;padding:40px 0;">
+        <div style="font-size:2.5rem;margin-bottom:12px;">👋</div>
+        <h3 style="margin-bottom:8px;">Got it — I'll reach out within 24 hours.</h3>
+        <p style="color:var(--muted);font-size:0.9rem;">Enjoy exploring the site!</p>
+      </div>
+    </div>
+  </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', html);
+
+  setTimeout(function() {
+    var popup = document.getElementById('entryPopup');
+    if (!popup) return;
+    popup.style.display = 'flex';
+    requestAnimationFrame(function() { popup.style.opacity = '1'; });
+  }, 2000);
+})();
+
+function closeEntryPopup() {
+  var popup = document.getElementById('entryPopup');
+  if (!popup) return;
+  sessionStorage.setItem('gfwa_popup_dismissed', '1');
+  popup.style.opacity = '0';
+  setTimeout(function() { popup.style.display = 'none'; }, 300);
+}
+
+
+function handleEntryPopupSubmit() {
+  var name     = (document.getElementById('epName')?.value     || '').trim();
+  var email    = (document.getElementById('epEmail')?.value    || '').trim();
+  var whatsapp = (document.getElementById('epWhatsApp')?.value || '').trim();
+  var weight   = (document.getElementById('epWeight')?.value   || '').trim();
+  var height   = (document.getElementById('epHeight')?.value   || '').trim();
+  var age      = (document.getElementById('epAge')?.value      || '').trim();
+  var activity = (document.getElementById('epActivity')?.value || '').trim();
+  var message  = (document.getElementById('epMessage')?.value  || '').trim();
+
+  var nameEl = document.getElementById('epName');
+  var emailEl = document.getElementById('epEmail');
+  var waEl   = document.getElementById('epWhatsApp');
+
+  if (!name)                               { nameEl.style.borderColor='var(--accent)';  nameEl.focus();  return; }
+  if (!email || !validateEmail(email))     { emailEl.style.borderColor='var(--accent)'; emailEl.focus(); return; }
+  if (!whatsapp || !validateWhatsApp(whatsapp)) { waEl.style.borderColor='var(--accent)'; waEl.focus();  return; }
+
+  var btn = document.getElementById('epSubmitBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+
+  submitLeadToSheets({ name, email, whatsapp, source: 'entry-popup' });
+  fetch('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, whatsapp, weight, height, age, activity, message, source: 'entry-popup' })
+  }).catch(function() {});
+  localStorage.setItem('gfwa_lead_captured', '1');
+
+  document.getElementById('entryPopupForm').style.display    = 'none';
+  document.getElementById('entryPopupSuccess').style.display = 'block';
+  setTimeout(function() { closeEntryPopup(); }, 3000);
 }
 
 // Inject modal into page once
@@ -207,10 +329,10 @@ function submitLeadToSheets(data) {
             <label for="interest">Programme of Interest</label>
             <select id="interest" required aria-required="true">
               <option value="">Select a programme</option>
-              <option value="monthly">Monthly — ₹5,000</option>
-              <option value="quarterly">Quarterly — ₹12,000</option>
-              <option value="half-yearly">Half Yearly — ₹23,000</option>
-              <option value="annual">Annual — ₹46,000</option>
+              <option value="monthly">Monthly — ₹6,000</option>
+              <option value="quarterly">Quarterly — ₹15,000</option>
+              <option value="half-yearly">Half Yearly — ₹27,000</option>
+              <option value="annual">Annual — ₹51,000</option>
               <option value="just-curious">Not sure yet, just exploring</option>
             </select>
           </div>
@@ -510,9 +632,4 @@ function updatePricing() {
     el.textContent = fmt(symbol, selectedOption.dataset[el.dataset.plan]);
   });
 
-  // Update original (strikethrough) prices
-  document.querySelectorAll('.pricing-card .price-orig[data-plan-orig]').forEach(el => {
-    const key = el.dataset.planOrig + 'Orig';
-    el.textContent = fmt(symbol, selectedOption.dataset[el.dataset.planOrig + '-orig'] || selectedOption.dataset[key]);
-  });
 }

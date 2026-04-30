@@ -10,6 +10,7 @@ const fs     = require('fs');
 const path   = require('path');
 const url    = require('url');
 const crypto = require('crypto');
+const zlib   = require('zlib');
 
 // ---------- Load .env ----------
 try {
@@ -227,18 +228,50 @@ const MIME = {
   '.jpg':  'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.png':  'image/png',
+  '.webp': 'image/webp',
   '.mp4':  'video/mp4',
   '.ico':  'image/x-icon',
   '.woff2':'font/woff2'
 };
 
-function serveFile(res, filePath) {
+const COMPRESSIBLE = new Set(['.html', '.css', '.js', '.json', '.svg']);
+const CACHE_TTL = {
+  '.html': 'no-cache, must-revalidate',
+  '.css':  'public, max-age=3600',
+  '.js':   'public, max-age=3600',
+  '.webp': 'public, max-age=604800',
+  '.jpg':  'public, max-age=604800',
+  '.jpeg': 'public, max-age=604800',
+  '.png':  'public, max-age=604800',
+  '.svg':  'public, max-age=604800',
+  '.woff2':'public, max-age=31536000, immutable',
+  '.mp4':  'public, max-age=604800',
+};
+
+function serveFile(res, filePath, req) {
   const ext  = path.extname(filePath).toLowerCase();
   const mime = MIME[ext] || 'application/octet-stream';
   try {
     const data = fs.readFileSync(filePath);
-    res.writeHead(200, { 'Content-Type': mime });
-    res.end(data);
+    const headers = { 'Content-Type': mime };
+    if (CACHE_TTL[ext]) headers['Cache-Control'] = CACHE_TTL[ext];
+
+    const acceptEncoding = (req && req.headers['accept-encoding']) || '';
+    if (COMPRESSIBLE.has(ext) && acceptEncoding.includes('gzip')) {
+      zlib.gzip(data, (err, compressed) => {
+        if (err) {
+          res.writeHead(200, headers);
+          res.end(data);
+        } else {
+          headers['Content-Encoding'] = 'gzip';
+          res.writeHead(200, headers);
+          res.end(compressed);
+        }
+      });
+    } else {
+      res.writeHead(200, headers);
+      res.end(data);
+    }
   } catch {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('404 Not Found');
@@ -361,7 +394,7 @@ const server = http.createServer(async (req, res) => {
       res.end();
       return;
     }
-    serveFile(res, path.join(__dirname, 'admin.html'));
+    serveFile(res, path.join(__dirname, 'admin.html'), req);
     return;
   }
 
@@ -445,7 +478,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ---------- Static files ----------
-  let filePath = pathname === '/' ? 'index.html' : pathname.replace(/^\//, '');
+  let filePath = pathname === '/' ? 'index.html' : decodeURIComponent(pathname).replace(/^\//, '');
   const fullPath = path.resolve(__dirname, filePath);
   // Path traversal protection — ensure file is within project directory
   if (!fullPath.startsWith(path.resolve(__dirname) + path.sep) && fullPath !== path.resolve(__dirname)) {
@@ -454,7 +487,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
   if (!path.extname(filePath) && !fs.existsSync(fullPath)) filePath += '.html';
-  serveFile(res, path.resolve(__dirname, filePath));
+  serveFile(res, path.resolve(__dirname, filePath), req);
 });
 
 server.listen(PORT, () => {
