@@ -20,6 +20,23 @@
   to = "/404.html"
   status = 404
 
+# Cache: images (1 week)
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# Cache: CSS and JS (1 hour — no cache busting in place)
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
 # Security headers
 [[headers]]
   for = "/*"
