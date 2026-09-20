@@ -43,6 +43,9 @@ function sanitize(str, maxLen) {
   return String(str).replace(/[<>&"'`]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c])).slice(0, maxLen).trim();
 }
 
+// Records the last status Google returned, so the handler can report it.
+let lastGoogleStatus = null;
+
 // Returns true only when Google actually accepted the response.
 async function submitToGoogleForm(data) {
   if (!GOOGLE_FORM_ENABLED) return false;
@@ -63,10 +66,19 @@ async function submitToGoogleForm(data) {
   try {
     const res = await fetch(GOOGLE_FORM_ACTION, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        // Google rejects some datacenter requests that carry a bare runtime UA.
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36',
+        'Referer': `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/viewform`
+      },
       body: body.toString()
     });
-    if (!res.ok) return false;
+    lastGoogleStatus = res.status;
+    if (!res.ok) {
+      console.error('Google Form rejected the post with status', res.status);
+      return false;
+    }
 
     // A closed or deleted form still answers 200 with an interstitial page,
     // which is how the previous form failed silently for weeks.
@@ -77,6 +89,7 @@ async function submitToGoogleForm(data) {
     }
     return true;
   } catch (err) {
+    lastGoogleStatus = `error: ${err.message}`;
     console.error('Google Form post failed:', err.message);
     return false;
   }
@@ -203,6 +216,6 @@ exports.handler = async (event) => {
   return {
     statusCode: 200,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ok: true, sheet: sheetOk, email: emailOk })
+    body: JSON.stringify({ ok: true, sheet: sheetOk, email: emailOk, googleStatus: lastGoogleStatus })
   };
 };
