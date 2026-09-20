@@ -150,7 +150,7 @@ async function sendEmailNotification(data) {
         'Content-Type':  'application/json'
       },
       body: JSON.stringify({
-        from:     'GetFitWithAdin <onboarding@resend.dev>',
+        from:     'GetFitWithAdin <leads@getfitwithadin.com>',
         to:       [NOTIFY_EMAIL],
         reply_to: data.email,
         subject:  `🔥 New inquiry from ${data.name}`,
