@@ -18,13 +18,24 @@ const VALID_ACTIVITY = ['sedentary','light','moderate','active',''];
 const VALID_INTEREST = ['monthly','quarterly','half-yearly','annual','just-curious',''];
 
 // Google Form field IDs
-const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSeJ7AgQlp80vZ3bHDcOA604Iz0aTFwJcg8BYirZLkYY9EdK_A/formResponse';
+// Owner account: adinankur3012@gmail.com
+// Leaving GOOGLE_FORM_ID as the PENDING placeholder disables the Google post,
+// so the email notification alone carries the lead.
+const GOOGLE_FORM_ID = '1FAIpQLSex4psvMJ9UhSGW1mhyafR-Qk98XyP5moVOnqajHvRYUAjNlw';
+const GOOGLE_FORM_ACTION = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`;
+const GOOGLE_FORM_ENABLED = GOOGLE_FORM_ID !== '1FAIpQLSex4psvMJ9UhSGW1mhyafR-Qk98XyP5moVOnqajHvRYUAjNlw';
+
 const FORM_FIELDS = {
-  name:     'entry.2107149741',
-  email:    'entry.526745828',
-  whatsapp: 'entry.655107678',
-  interest: 'entry.884049450',
-  source:   'entry.653971467',
+  name:     'entry.1543747305',
+  email:    'entry.2135977318',
+  whatsapp: 'entry.1304594152',
+  interest: 'entry.2023850752',
+  source:   'entry.1513528847',
+  weight:   'entry.1309027568',
+  height:   'entry.1085987052',
+  age:      'entry.1919889383',
+  activity: 'entry.1994554956',
+  message:  'entry.816571833',
 };
 
 function sanitize(str, maxLen) {
@@ -32,27 +43,53 @@ function sanitize(str, maxLen) {
   return String(str).replace(/[<>&"'`]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c])).slice(0, maxLen).trim();
 }
 
+// Returns true only when Google actually accepted the response.
 async function submitToGoogleForm(data) {
+  if (!GOOGLE_FORM_ENABLED) return false;
+
   const body = new URLSearchParams({
     [FORM_FIELDS.name]:     data.name,
     [FORM_FIELDS.email]:    data.email,
     [FORM_FIELDS.whatsapp]: data.whatsapp || '',
     [FORM_FIELDS.interest]: data.interest || '',
     [FORM_FIELDS.source]:   data.source || 'apply-modal',
+    [FORM_FIELDS.weight]:   data.weight   || '',
+    [FORM_FIELDS.height]:   data.height   || '',
+    [FORM_FIELDS.age]:      data.age      || '',
+    [FORM_FIELDS.activity]: data.activity || '',
+    [FORM_FIELDS.message]:  data.message  || '',
   });
 
-  await fetch(GOOGLE_FORM_ACTION, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString()
-  });
+  try {
+    const res = await fetch(GOOGLE_FORM_ACTION, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString()
+    });
+    if (!res.ok) return false;
+
+    // A closed or deleted form still answers 200 with an interstitial page,
+    // which is how the previous form failed silently for weeks.
+    const text = await res.text();
+    if (text.includes('no longer accepting responses')) {
+      console.error('Google Form is closed and rejected a lead');
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('Google Form post failed:', err.message);
+    return false;
+  }
 }
 
 async function sendEmailNotification(data) {
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
   const NOTIFY_EMAIL   = process.env.NOTIFY_EMAIL || process.env.EMAIL_USER;
 
-  if (!RESEND_API_KEY || !NOTIFY_EMAIL) return;
+  if (!RESEND_API_KEY || !NOTIFY_EMAIL) {
+    console.error('Email notification skipped: RESEND_API_KEY or NOTIFY_EMAIL is not set');
+    return false;
+  }
 
   const SOURCE_LABELS = { 'entry-popup': 'Entry Popup', 'apply-modal': 'Apply Form' };
   const rows = [
@@ -92,20 +129,30 @@ async function sendEmailNotification(data) {
     </div>
   </div>`;
 
-  await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${RESEND_API_KEY}`,
-      'Content-Type':  'application/json'
-    },
-    body: JSON.stringify({
-      from:     'GetFitWithAdin <onboarding@resend.dev>',
-      to:       [NOTIFY_EMAIL],
-      reply_to: data.email,
-      subject:  `🔥 New inquiry from ${data.name}`,
-      html
-    })
-  });
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Content-Type':  'application/json'
+      },
+      body: JSON.stringify({
+        from:     'GetFitWithAdin <onboarding@resend.dev>',
+        to:       [NOTIFY_EMAIL],
+        reply_to: data.email,
+        subject:  `🔥 New inquiry from ${data.name}`,
+        html
+      })
+    });
+    if (!res.ok) {
+      console.error('Resend rejected the notification:', res.status, await res.text());
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('Resend request failed:', err.message);
+    return false;
+  }
 }
 
 exports.handler = async (event) => {
@@ -134,15 +181,28 @@ exports.handler = async (event) => {
     source:   VALID_SOURCE.includes(raw.source)   ? raw.source   : '',
   };
 
-  // Run both in parallel
-  await Promise.allSettled([
+  // Run both in parallel. A lead only counts as captured if at least one
+  // sink accepted it, otherwise the site must not tell the visitor it worked.
+  const [sheet, email] = await Promise.allSettled([
     submitToGoogleForm(data),
     sendEmailNotification(data)
   ]);
 
+  const sheetOk = sheet.status === 'fulfilled' && sheet.value === true;
+  const emailOk = email.status === 'fulfilled' && email.value === true;
+
+  if (!sheetOk && !emailOk) {
+    console.error('Lead dropped, no sink accepted it:', data.email);
+    return {
+      statusCode: 502,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ok: false, error: 'Could not record the lead' })
+    };
+  }
+
   return {
     statusCode: 200,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ok: true })
+    body: JSON.stringify({ ok: true, sheet: sheetOk, email: emailOk })
   };
 };

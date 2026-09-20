@@ -99,33 +99,39 @@ const PRICING = {
 };
 
 // ---------- Google Sheets Lead Capture ----------
-// HOW TO SET UP:
-// 1. Go to forms.google.com and create a new form
-// 2. Add 5 Short Answer questions: Name, Email, WhatsApp, Interest, Source
-// 3. Copy the form URL — the FORM_ID is the long string between /d/e/ and /viewform
-// 4. To get entry IDs: open the form, right-click > Inspect, fill a field and look for "entry.XXXXXXX" in the network tab
-//    OR use this shortcut: open the form URL + "?usp=pp_url&entry.FIELD_ID=test" to find each ID
-// 5. Paste the IDs below and set LEADS_ENABLED = true
+// Owner account: adinankur3012@gmail.com
+// The form has 10 Short Answer questions (Message is Paragraph), in this order:
+//   Name, Email, WhatsApp, Programme Interest, Source,
+//   Current Weight, Height, Age, Activity Level, Message
+// To re-point at a different form: replace GOOGLE_FORM_ID and the LEAD_FIELDS ids.
+// Leaving GOOGLE_FORM_ID as the PENDING placeholder disables the Google post
+// and lets the Netlify function handle the lead on its own.
 
-const LEADS_ENABLED = true;
-const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSeJ7AgQlp80vZ3bHDcOA604Iz0aTFwJcg8BYirZLkYY9EdK_A/formResponse';
+const GOOGLE_FORM_ID = '1FAIpQLSex4psvMJ9UhSGW1mhyafR-Qk98XyP5moVOnqajHvRYUAjNlw';
+const GOOGLE_FORM_ACTION = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`;
+const LEADS_ENABLED = GOOGLE_FORM_ID !== '1FAIpQLSex4psvMJ9UhSGW1mhyafR-Qk98XyP5moVOnqajHvRYUAjNlw';
+
 const LEAD_FIELDS = {
-  name:      'entry.2107149741',
-  email:     'entry.526745828',
-  whatsapp:  'entry.655107678',
-  interest:  'entry.884049450',
-  source:    'entry.653971467',
+  name:     'entry.1543747305',
+  email:    'entry.2135977318',
+  whatsapp: 'entry.1304594152',
+  interest: 'entry.2023850752',
+  source:   'entry.1513528847',
+  weight:   'entry.1309027568',
+  height:   'entry.1085987052',
+  age:      'entry.1919889383',
+  activity: 'entry.1994554956',
+  message:  'entry.816571833',
 };
 
 function submitLeadToSheets(data) {
   if (!LEADS_ENABLED) return;
   const body = new URLSearchParams();
-  if (data.name)     body.append(LEAD_FIELDS.name,     data.name);
-  if (data.email)    body.append(LEAD_FIELDS.email,    data.email);
-  if (data.whatsapp) body.append(LEAD_FIELDS.whatsapp, data.whatsapp);
-  if (data.interest) body.append(LEAD_FIELDS.interest, data.interest);
-  if (data.source)   body.append(LEAD_FIELDS.source,   data.source);
-  fetch(GOOGLE_FORM_ACTION, { method: 'POST', mode: 'no-cors', body });
+  Object.keys(LEAD_FIELDS).forEach(function (key) {
+    if (data[key]) body.append(LEAD_FIELDS[key], data[key]);
+  });
+  fetch(GOOGLE_FORM_ACTION, { method: 'POST', mode: 'no-cors', body })
+    .catch(function () { /* no-cors gives no readable result; Netlify is the source of truth */ });
 }
 
 // ---------- Entry Popup (optional — dismissible) ----------
@@ -237,17 +243,27 @@ function handleEntryPopupSubmit() {
   var btn = document.getElementById('epSubmitBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
 
-  submitLeadToSheets({ name, email, whatsapp, source: 'entry-popup' });
+  submitLeadToSheets({ name, email, whatsapp, weight, height, age, activity, message, source: 'entry-popup' });
+
   fetch('/api/contact', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email, whatsapp, weight, height, age, activity, message, source: 'entry-popup' })
-  }).catch(function() {});
-  localStorage.setItem('gfwa_lead_captured', '1');
-
-  document.getElementById('entryPopupForm').style.display    = 'none';
-  document.getElementById('entryPopupSuccess').style.display = 'block';
-  setTimeout(function() { closeEntryPopup(); }, 3000);
+  })
+  .then(function (res) {
+    if (!res.ok) throw new Error('Server error');
+    // Only remember the lead once it has actually been accepted.
+    localStorage.setItem('gfwa_lead_captured', '1');
+    document.getElementById('entryPopupForm').style.display    = 'none';
+    document.getElementById('entryPopupSuccess').style.display = 'block';
+    setTimeout(function () { closeEntryPopup(); }, 3000);
+  })
+  .catch(function () {
+    if (btn) { btn.disabled = false; btn.textContent = 'Send My Details'; }
+    if (confirm('Could not send your details right now. Message Adin on WhatsApp instead?')) {
+      applyViaWhatsApp();
+    }
+  });
 }
 
 // Inject modal into page once
@@ -298,6 +314,10 @@ function handleEntryPopupSubmit() {
           <div class="form-group">
             <label for="email">Email Address</label>
             <input type="email" id="email" placeholder="john@example.com" required maxlength="120" autocomplete="email" aria-required="true" />
+          </div>
+          <div class="form-group">
+            <label for="whatsapp">WhatsApp Number</label>
+            <input type="tel" id="whatsapp" placeholder="+91 98765 43210" required autocomplete="tel" aria-required="true" />
           </div>
           <div class="form-row">
             <div class="form-group">
@@ -428,6 +448,7 @@ function validateWhatsApp(whatsapp) {
 function handleFormSubmit() {
   const name     = sanitize(document.getElementById('name')?.value, 80);
   const email    = sanitize(document.getElementById('email')?.value, 120);
+  const whatsapp = sanitize(document.getElementById('whatsapp')?.value, 20);
   const weight   = sanitize(document.getElementById('weight')?.value, 5);
   const height   = sanitize(document.getElementById('height')?.value, 5);
   const age      = sanitize(document.getElementById('age')?.value, 3);
@@ -435,8 +456,13 @@ function handleFormSubmit() {
   const interest = document.getElementById('interest')?.value || '';
   const message  = sanitize(document.getElementById('message')?.value, 1000);
 
-  if (!name || !email || !weight || !height || !age || !activity || !interest || !message) {
+  if (!name || !email || !whatsapp || !weight || !height || !age || !activity || !interest || !message) {
     alert('Please fill in all fields before submitting.');
+    return;
+  }
+
+  if (!validateWhatsApp(whatsapp)) {
+    alert('Please enter a valid WhatsApp number.');
     return;
   }
 
@@ -461,13 +487,13 @@ function handleFormSubmit() {
   if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
 
   // Log lead to Google Sheets in parallel (fire and forget)
-  submitLeadToSheets({ name, email, interest, source: 'apply-modal' });
+  submitLeadToSheets({ name, email, whatsapp, weight, height, age, activity, interest, message, source: 'apply-modal' });
 
   const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://getfitwithadin.com';
   fetch(`${API_BASE}/api/contact`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, weight, height, age, activity, interest, message })
+    body: JSON.stringify({ name, email, whatsapp, weight, height, age, activity, interest, message, source: 'apply-modal' })
   })
   .then(res => {
     if (!res.ok) throw new Error('Server error');
