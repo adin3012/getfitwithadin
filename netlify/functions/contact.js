@@ -116,7 +116,7 @@ async function sendEmailNotification(data) {
     data.activity && ['Activity', ACTIVITY_LABELS[data.activity] || data.activity],
     data.interest && ['Programme',PROGRAMME_LABELS[data.interest] || data.interest],
     data.message  && ['Goal',     data.message],
-    ['Time',    new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })]
+    ['Time',    new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' })]
   ].filter(Boolean);
 
   const tableRows = rows.map(([k, v]) => `

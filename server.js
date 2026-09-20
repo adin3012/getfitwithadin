@@ -183,7 +183,7 @@ async function sendEmail(entry) {
     entry.activity && ['Activity Level', ACTIVITY_LABELS[entry.activity] || entry.activity],
     entry.interest && ['Programme',      PROGRAMME_LABELS[entry.interest] || entry.interest],
     entry.message  && ['Goal',           entry.message],
-    ['Submitted', new Date(entry.timestamp).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })]
+    ['Submitted', new Date(entry.timestamp).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' })]
   ].filter(Boolean);
 
   const tableRows = rows.map(([k, v]) => `
