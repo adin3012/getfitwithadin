@@ -23,7 +23,7 @@ const VALID_INTEREST = ['monthly','quarterly','half-yearly','annual','just-curio
 // so the email notification alone carries the lead.
 const GOOGLE_FORM_ID = '1FAIpQLSex4psvMJ9UhSGW1mhyafR-Qk98XyP5moVOnqajHvRYUAjNlw';
 const GOOGLE_FORM_ACTION = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`;
-const GOOGLE_FORM_ENABLED = GOOGLE_FORM_ID !== '1FAIpQLSex4psvMJ9UhSGW1mhyafR-Qk98XyP5moVOnqajHvRYUAjNlw';
+const GOOGLE_FORM_ENABLED = /^1FAIpQL[\w-]+$/.test(GOOGLE_FORM_ID);
 
 const FORM_FIELDS = {
   name:     'entry.1543747305',

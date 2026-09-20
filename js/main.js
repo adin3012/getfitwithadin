@@ -109,7 +109,7 @@ const PRICING = {
 
 const GOOGLE_FORM_ID = '1FAIpQLSex4psvMJ9UhSGW1mhyafR-Qk98XyP5moVOnqajHvRYUAjNlw';
 const GOOGLE_FORM_ACTION = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`;
-const LEADS_ENABLED = GOOGLE_FORM_ID !== '1FAIpQLSex4psvMJ9UhSGW1mhyafR-Qk98XyP5moVOnqajHvRYUAjNlw';
+const LEADS_ENABLED = /^1FAIpQL[\w-]+$/.test(GOOGLE_FORM_ID);
 
 const LEAD_FIELDS = {
   name:     'entry.1543747305',
